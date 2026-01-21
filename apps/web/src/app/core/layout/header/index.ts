@@ -184,25 +184,17 @@ export class Header {
   private scrollDispatcher = inject(ScrollDispatcher);
   private destroyRef = inject(DestroyRef);
 
-  // Configurazione
   private readonly MAX_SCROLL_PX = 50; // Dopo 300px l'effetto è al massimo
   private readonly MAX_BLUR_PX = 12; // Blur massimo richiesto
   private readonly MAX_OPACITY = 0.7; // Opacità massima sfondo (0.7 = 70%)
 
-  // Signals per i valori CSS
   currentBlur = signal<number>(0);
   currentOpacity = signal<number>(0);
 
-  // 2. Stato reattivo con Signal
   isScrolled = signal<boolean>(false);
 
   constructor() {
-    // afterNextRender DEVE essere chiamato nel constructor context
     afterNextRender(() => {
-      console.log('DENTRO');
-      // ⚠️ QUESTO CODICE GIRA SOLO SUL BROWSER ⚠️
-      // Non serve più isPlatformBrowser. Il server ignora totalmente questo blocco.
-
       this.scrollDispatcher
         .scrolled()
         .pipe(takeUntilDestroyed(this.destroyRef))
