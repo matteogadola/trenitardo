@@ -42,6 +42,7 @@ export interface Trip {
   statusMessage?: string;
   isDeparted: boolean;
   isCompleted: boolean;
+  duration: number;
   stops: TripStop[];
 }
 

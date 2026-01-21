@@ -5,10 +5,12 @@ import { TimePipe } from '../../shared/pipes/time-pipe';
 import { AbsPipe } from '../../shared/pipes/abs-pipe';
 import { TimeDelay } from '@shared/components/time-delay/time-delay';
 import { TripTable } from '@shared/components/trip-table/trip-table';
+import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
+import { TripList } from '@app/shared/components/trip-list/trip-list';
 
 @Component({
   selector: 'home-trip-list',
-  imports: [CommonModule, TimePipe, AbsPipe, TimeDelay, TripTable],
+  imports: [CommonModule, TimePipe, AbsPipe, TimeDelay, TripTable, TripList],
   template: `
     <div class="py-12">
       <div
@@ -25,8 +27,11 @@ import { TripTable } from '@shared/components/trip-table/trip-table';
         </div>
 
         <!-- Tabella -->
-        <div class="overflow-x-auto">
+        <div class="hidden lg:flex">
           <app-trip-table [trips]="trips()" />
+        </div>
+        <div class="flex flex-col lg:hidden px-2 py-2">
+          <app-trip-list [trips]="trips()" />
         </div>
       </div>
     </div>

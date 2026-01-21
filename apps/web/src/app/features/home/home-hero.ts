@@ -4,7 +4,7 @@ import { Component } from '@angular/core';
   selector: 'home-hero',
   imports: [],
   template: `
-    <div class="py-10">
+    <div class="pt-10 pb-5">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-16 relative">
         <!-- Header -->
         <div class="text-center mb-16">
@@ -20,7 +20,7 @@ import { Component } from '@angular/core';
           <p class="text-xl text-slate-600 max-w-2xl mx-auto">
             Trasformiamo dati effimeri in statistiche accessibili.
             <span class="block"
-              >Una dashboard visiva per comprendere l'andamento della linea valtellinese.</span
+              >Una dashboard visiva per comprendere la viabilità ferroviaria valtellinese.</span
             >
           </p>
         </div>

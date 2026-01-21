@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { HeaderLogo } from './header-logo';
+import { AnimatedCard } from './animated-card';
 
-describe('HeaderLogo', () => {
-  let component: HeaderLogo;
-  let fixture: ComponentFixture<HeaderLogo>;
+describe('AnimatedCard', () => {
+  let component: AnimatedCard;
+  let fixture: ComponentFixture<AnimatedCard>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [HeaderLogo]
+      imports: [AnimatedCard]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(HeaderLogo);
+    fixture = TestBed.createComponent(AnimatedCard);
     component = fixture.componentInstance;
     await fixture.whenStable();
   });

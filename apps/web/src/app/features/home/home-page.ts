@@ -22,30 +22,17 @@ import { Analytics, logEvent } from '@angular/fire/analytics';
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="w-content pt-[80px]">
-      <!-- h-full w-content -->
       <home-hero />
 
-      @if (tripsResource.hasValue()) {
+      @defer (when tripsResource.hasValue()) {
         <home-stats [trips]="tripsResource.value()" />
       }
 
-      <div class="hidden relative h-[390px] w-full">
-        <!--img ngSrc="/images/background-5.png" fill alt="Trenitardo Logo" class="object-cover" priority /-->
-        <div class="pt-5 px-8 flex space-x-2 text-white items-center">
-          <!--div class="mt-[calc(320px+32px)] font-poppins text-black space-x-2">
-          <span class="text-2xl font-semibold">
-            Nuova Schedulazione
-          </span>
-          <homepage-filters />
-        </div-->
-        </div>
-      </div>
-      <div class="mt-16 lg:max-w-6xl mx-auto"></div>
       <div class="">
         <home-filters [lines]="(lines$ | async) ?? []" [date]="date()" />
       </div>
-      @if (tripsResource.hasValue()) {
-        <div class="mt-16">
+      @defer (when tripsResource.hasValue()) {
+        <div class="mt-8">
           <home-trip-list [trips]="tripsResource.value()" [date]="date()" />
         </div>
       }

@@ -12,7 +12,7 @@ interface FilterData {
   selector: 'home-filters',
   imports: [FormField],
   template: `
-    <div class="py-12">
+    <div class="pt-12 pb-6">
       <div class="bg-white/80 backdrop-blur-sm rounded-2xl border border-purple-200 p-6 shadow-lg">
         <div class="flex items-center gap-3 mb-6">
           <!--app-filter-icon class="w-5 h-5 text-purple-600"></app-filter-icon-->
