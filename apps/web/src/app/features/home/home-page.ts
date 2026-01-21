@@ -1,4 +1,11 @@
-import { Component, ChangeDetectionStrategy, inject, resource, signal } from '@angular/core';
+import {
+  Component,
+  ChangeDetectionStrategy,
+  inject,
+  resource,
+  signal,
+  afterNextRender,
+} from '@angular/core';
 import { CommonModule, NgOptimizedImage } from '@angular/common';
 import { HomeFilters } from './home-filters';
 import { HomeStats } from './home-stats';
@@ -7,6 +14,7 @@ import { ApiService } from '@app/core/api/api-service';
 import { rxResource, toSignal } from '@angular/core/rxjs-interop';
 import { HomeHero } from './home-hero';
 import { TODAY } from '@app/core/utils/date-util';
+import { Analytics, logEvent } from '@angular/fire/analytics';
 
 @Component({
   selector: 'app-home-page',
@@ -59,5 +67,17 @@ export class HomePage {
 
   onDateChange(date: string) {
     this.date.set(date);
+  }
+
+  private analytics = inject(Analytics);
+
+  constructor() {
+    afterNextRender(() => {
+      logEvent(this.analytics, 'landing_page_view', {
+        campaign: 'launch_v1',
+        timestamp: new Date().toISOString(),
+      });
+      console.debug('Evento custom inviato');
+    });
   }
 }
