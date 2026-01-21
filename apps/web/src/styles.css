@@ -1,0 +1,75 @@
+@import 'tailwindcss';
+@import './styles-fonts.css';
+
+:root {
+  /* #F0EEE9 - cloud dancer rgba(240,238,233,1.00) */
+  --background: hsl(43, 19%, 93%);
+  /* #223057 */
+  --foreground: hsl(224 43.8% 23.7%);
+
+  /*--background: hsl(43, 19%, 93%);
+  --foreground: hsl(0 0% 3.9%);*/
+
+  --primary: #223057;
+  /*(60%)*/
+  --secondary: #205ba7;
+  /*(30%)*/
+  --accent: #dcce51;
+  /*(10%)*/
+
+  --font-family: var(--font-poppins), Arial, Helvetica, sans-serif;
+  --font-weight: 300;
+
+  --navbar-height: 80px;
+}
+
+@theme {
+  --font-geist: Geist;
+  --font-unbounded: Unbounded;
+  --font-anton: Anton;
+
+  --spacing: 0.25rem;
+
+  --color-primary: #1e88e5;
+  --color-error-dark: #d32f2f;
+  --color-warn-dark: #fbc02d;
+  --color-info-dark: #0288d1;
+  --color-accent: #6fb06a;
+  --color-heading: #2b1505;
+  --color-link: #1c000b;
+  --color-button: red;
+  /*#2292a4;*/
+  --color-background: #fdfbff;
+
+  --text-xs: 0.55rem;
+  --text-xs--line-height: 0.5rem;
+  /*--breakpoint-lg: 1280px;
+  --breakpoint-xl: 2560px;
+  --breakpoint-2xl: 3840px;
+  */
+}
+
+/* Global Resets */
+html,
+body {
+  height: 100%;
+  margin: 0;
+
+  font-family: Geist, Unbounded, 'Helvetica Neue', sans-serif;
+  font-weight: 400;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+
+  background-color: var(--background);
+}
+
+.w-content {
+  width: 100%;
+  max-width: var(--container-6xl);
+  margin-inline: auto;
+  padding-inline: calc(var(--spacing) * 4);
+
+  @media (width >= 64rem) {
+    padding-inline: calc(var(--spacing) * 0);
+  }
+}

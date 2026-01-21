@@ -1,0 +1,29 @@
+{
+  "firestore": {
+    "database": "(default)",
+    "location": "eur3",
+    "rules": "firestore.rules",
+    "indexes": "firestore.indexes.json"
+  },
+  "functions": [
+    {
+      "source": "apps/api",
+      "codebase": "default",
+      "ignore": ["**/node_modules", "scripts", ".git", "*.log", "*.local"],
+      "predeploy": [
+        "pnpm --filter api run lint",
+        "pnpm --filter api run build",
+        "pnpm --filter api run predeploy:clean"
+      ],
+      "postdeploy": ["pnpm --filter api run postdeploy:restore"]
+    }
+  ],
+  "apphosting": {
+    "backendId": "web",
+    "ignore": ["apps/api", "**/node_modules", ".git", "*.log", "functions"],
+    "alwaysDeployFromSource": true
+  },
+  "remoteconfig": {
+    "template": "remoteconfig.template.json"
+  }
+}

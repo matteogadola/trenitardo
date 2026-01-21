@@ -1,0 +1,47 @@
+# Settings for Backend (on Cloud Run).
+# See https://firebase.google.com/docs/app-hosting/configure#cloud-run
+runConfig:
+  minInstances: 0
+  maxInstances: 2
+
+  # maxInstances: 100
+  # concurrency: 80
+  # cpu: 1
+  # memoryMiB: 512
+  #runCommand: pnpm --filter web start
+#scripts:
+# buildCommand: pnpm run build:web
+#runCommand: pnpm --filter web start
+# Environment variables and secrets.
+# env:
+# Configure environment variables.
+# See https://firebase.google.com/docs/app-hosting/configure#user-defined-environment
+# - variable: MESSAGE
+#   value: Hello world!
+#   availability:
+#     - BUILD
+#     - RUNTIME
+
+# Grant access to secrets in Cloud Secret Manager.
+# See https://firebase.google.com/docs/app-hosting/configure#secret-parameters
+# - variable: MY_SECRET
+#   secret: mySecretRef
+#env:
+#  - variable: GOOGLE_ENTRYPOINT
+#    value: node apps/web/dist/web/server/server.mjs
+#  - variable: GOOGLE_NODE_RUN_SCRIPTS
+#    value: build:web
+#    availability:
+#      - BUILD
+env:
+  - variable: NODE_ENV
+    value: production
+    availability:
+      - BUILD
+      - RUNTIME
+  - variable: NPM_CONFIG_NODE_LINKER
+    value: hoisted
+    availability:
+      - BUILD
+  - variable: FIREBASE_CONFIG
+    secret: FIREBASE_CONFIG

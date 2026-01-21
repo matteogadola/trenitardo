@@ -1,0 +1,14 @@
+@font-face {
+  font-family: 'Geist';
+  src: url('assets/fonts/geist/Geist-VariableFont_wght.ttf');
+}
+
+@font-face {
+  font-family: 'Unbounded';
+  src: url('assets/fonts/unbounded/Unbounded-VariableFont_wght.ttf');
+}
+
+@font-face {
+  font-family: 'Anton';
+  src: url('assets/fonts/Anton-Regular.ttf');
+}
