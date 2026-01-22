@@ -31,7 +31,7 @@ import { MathCeilPipe } from '../../shared/pipes/math-pipe';
             @if (cancelledTrips().length > 0) {
               @let text = cancelledTrips().length === 1 ? 'cancellato' : 'cancellati';
               <div>
-                <h3 class="text-slate-600 uppercase">text</h3>
+                <h3 class="text-slate-600 uppercase">{{ text }}</h3>
                 <p class="text-3xl text-slate-800">{{ cancelledTrips().length }}</p>
               </div>
             }
@@ -66,11 +66,17 @@ import { MathCeilPipe } from '../../shared/pipes/math-pipe';
               </p>
             </div>
           </div>
-          <div>
-            <h3 class="text-slate-600 uppercase">Treni in orario</h3>
-            <p class="text-3xl text-slate-800">
-              {{ ((onTimeTrips().length / trips().length) * 100).toFixed(0) }}%
-            </p>
+          <div class="flex justify-between">
+            <div>
+              <h3 class="text-slate-600 uppercase">Treni in orario</h3>
+              <p class="text-3xl text-slate-800">
+                {{ ((onTimeTrips().length / trips().length) * 100).toFixed(0) }}%
+              </p>
+            </div>
+            <div>
+              <h3 class="text-slate-600 uppercase">Ritardo mediano</h3>
+              <p class="text-3xl text-slate-800">{{ medianDelay() }} minuti</p>
+            </div>
           </div>
         </div>
       </app-animated-card>
@@ -137,6 +143,14 @@ export class HomeStats {
     this.trips().filter((trip) => trip.status === 'partially-cancelled'),
   );
   readonly totalDelay = computed(() => this.delayedTrips().reduce((a, v) => a + (v.delay ?? 0), 0));
+  readonly medianDelay = computed(() => {
+    const delays = this.delayedTrips()
+      .filter((trip) => trip.delay)
+      .map((trip) => trip.delay);
+    delays.sort((a, b) => a - b);
+    const mid = Math.floor(delays.length / 2);
+    return delays.length % 2 === 0 ? (delays[mid - 1] + delays[mid]) / 2 : delays[mid];
+  });
 
   data = [];
   statusData = computed(() => {

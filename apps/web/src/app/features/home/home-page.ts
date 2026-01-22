@@ -29,7 +29,8 @@ import { Analytics, logEvent } from '@angular/fire/analytics';
       }
 
       <div class="">
-        <home-filters [lines]="(lines$ | async) ?? []" [date]="date()" />
+        <!--home-filters [lines]="(lines$ | async) ?? []" [date]="date()" /-->
+        <home-filters (filterSubmit)="onFilterUpdate($event)" />
       </div>
       @defer (when tripsResource.hasValue()) {
         <div class="mt-8">
@@ -52,8 +53,8 @@ export class HomePage {
     defaultValue: [],
   });
 
-  onDateChange(date: string) {
-    this.date.set(date);
+  onFilterUpdate(filter: any) {
+    this.date.set(filter.date);
   }
 
   private analytics = inject(Analytics);
@@ -64,7 +65,6 @@ export class HomePage {
         campaign: 'launch_v1',
         timestamp: new Date().toISOString(),
       });
-      console.debug('Evento custom inviato');
     });
   }
 }
