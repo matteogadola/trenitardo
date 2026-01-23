@@ -9,10 +9,10 @@ import { TripStatusPipe } from '../../pipes/trip-pipe';
   selector: 'app-trip-list',
   imports: [CardModule, LineTypeIcon, TimePipe, ReadableDurationPipe, TripStatusPipe],
   template: `
-    <div>
+    <div [class]="class()">
       @for (trip of trips(); track trip.id) {
         <div
-          class="bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-md transition-shadow duration-300 p-4 mb-4"
+          class="bg-white/60 border border-gray-200 rounded-xl shadow-sm hover:shadow-md transition-shadow duration-300 p-4 mb-4"
         >
           <div class="flex flex-col md:flex-row md:items-center justify-between gap-6">
             <div class="flex flex-col grow">
@@ -47,13 +47,20 @@ import { TripStatusPipe } from '../../pipes/trip-pipe';
                     {{ trip.status | mapTripStatus }}
                   </span>
                   @if (trip.delay > 0) {
-                    <span class="text-red-400 uppercase"> +{{ trip.delay }} min </span>
+                    <span
+                      class="text-red-400 uppercase"
+                      [class.text-red-400]="trip.status !== 'on-time'"
+                      [class.text-[#005965]]="trip.status === 'on-time'"
+                    >
+                      +{{ trip.delay }} min
+                    </span>
                   }
                 </div>
                 <div class="flex flex-col items-end">
                   <span
                     class="text-[22px]  text-[#005965] leading-none"
                     [class.font-bold]="trip.isCompleted"
+                    [class.italic]="!trip.isCompleted"
                   >
                     {{ trip.actualArrivalTime | time }}
                   </span>
@@ -75,4 +82,5 @@ import { TripStatusPipe } from '../../pipes/trip-pipe';
 })
 export class TripList {
   trips = input<Trip[]>([]);
+  class = input<string>('');
 }

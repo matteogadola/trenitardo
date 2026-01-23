@@ -93,10 +93,10 @@ export interface FilterState {
         </div>
       </div>
     </div-->
-    <div class="app-filter pt-12 pb-6">
+    <div [class]="'app-filter ' + class()">
       <form
         (submit)="onSubmit($event)"
-        class="flex flex-col gap-4 p-4 bg-white rounded-xl border border-gray-100 shadow-sm sm:flex-row sm:items-end"
+        class="flex flex-col gap-4 p-4 bg-white/60 backdrop-blur-sm rounded-xl border border-gray-100 shadow-sm sm:flex-row sm:items-end"
       >
         <div class="flex flex-col gap-1 w-full sm:w-auto mx-auto">
           <!--div class="flex items-center gap-3 mb-6">
@@ -108,7 +108,9 @@ export interface FilterState {
               matIconButton
               (click)="prevDay()"
               aria-label="Example icon button with a vertical three dot icon"
-              [disabled]="filtersForm.date().value().format('YYYY-MM-DD') === '2026-01-15'"
+              [disabled]="
+                isLoading() || filtersForm.date().value().format('YYYY-MM-DD') === '2026-01-16'
+              "
             >
               <mat-icon>chevron_left</mat-icon>
             </button>
@@ -175,8 +177,9 @@ export interface FilterState {
                 placeholder="Seleziona una data"
                 (click)="picker.open()"
                 [formField]="filtersForm.date"
-                min="2026-01-15"
+                min="2026-01-16"
                 class="text-center cursor-pointer"
+                [disabled]="isLoading()"
               />
               <mat-datepicker #picker></mat-datepicker>
             </mat-form-field>
@@ -185,7 +188,7 @@ export interface FilterState {
               matIconButton
               (click)="nextDay()"
               aria-label="Example icon button with a vertical three dot icon"
-              [disabled]="filtersForm.date().value().isToday()"
+              [disabled]="isLoading() || filtersForm.date().value().isToday()"
             >
               <mat-icon>chevron_right</mat-icon>
             </button>
@@ -214,6 +217,7 @@ export interface FilterState {
   styles: ``,
 })
 export class HomeFilters {
+  class = input<string>('');
   /*date = input<string>(TODAY);
   lines = input<Line[]>([]);
 
@@ -225,14 +229,8 @@ export class HomeFilters {
 
   selectedDate: string = '';
   selectedRoute: string = '';*/
-  constructor() {
-    effect(() => {
-      const date = this.filtersForm.date().value();
-      this.filterSubmit.emit({
-        date: date.format('YYYY-MM-DD'),
-      });
-    });
-  }
+
+  isLoading = input<boolean>(false);
 
   protected readonly filterModel = signal<FilterData>({
     date: dt(),
@@ -244,11 +242,20 @@ export class HomeFilters {
     nonNullable: true,
   });
 
-  // --- Inputs / Outputs ---
-  readonly suggestions = input<string[]>([]);
-  readonly initialState = input<FilterState | null>(null);
+  constructor() {
+    effect(() => {
+      const date = this.filtersForm.date().value();
+      this.filterSubmit.emit({
+        date: date.format('YYYY-MM-DD'),
+      });
+    });
+  }
 
-  readonly onSearch = output<string>();
+  // --- Inputs / Outputs ---
+  //readonly suggestions = input<string[]>([]);
+  //readonly initialState = input<FilterState | null>(null);
+
+  //readonly onSearch = output<string>();
   readonly filterSubmit = output<Partial<FilterState>>();
 
   // --- State (Signal Forms) ---
@@ -257,7 +264,7 @@ export class HomeFilters {
     () => this.initialState()?.dateRange ?? new Date(),
   );*/
 
-  readonly text = linkedSignal<string | null>(() => this.initialState()?.searchText ?? '');
+  //readonly text = linkedSignal<string | null>(() => this.initialState()?.searchText ?? '');
 
   // --- Computed Helpers ---
   /*readonly isRangeMode = computed(() => {
@@ -300,24 +307,28 @@ export class HomeFilters {
 
   onSubmit(event: Event): void {
     event.preventDefault();
-    const date = this.filtersForm.date().value();
+  }
 
-    this.filterSubmit.emit({
-      date: date.format('YYYY-MM-DD'),
-      searchText: this.text(),
-    });
+  //onSubmit(event: Event): void {
+  //  event.preventDefault();
+  //  const date = this.filtersForm.date().value();
 
-    //submit(this.filtersForm, async () => {
-    //console.log('Format!', val.format()); // undefined (Ha perso i metodi)
-    //const { date } = this.filterModel();
-    //console.log(date.format());
-    /*
+  //  this.filterSubmit.emit({
+  //    date: date.format('YYYY-MM-DD'),
+  //    searchText: this.text(),
+  //  });
+
+  //submit(this.filtersForm, async () => {
+  //console.log('Format!', val.format()); // undefined (Ha perso i metodi)
+  //const { date } = this.filterModel();
+  //console.log(date.format());
+  /*
       console.log('ORIGINALE', this.filtersForm.date().value());
       console.log('VALORE', val.format('YYYY-MM-DD'));
       this.filterSubmit.emit({
         date: dt(this.filtersForm.date().value()).format('YYYY-MM-DD'),
         searchText: this.text(),
       });*/
-    //});
-  }
+  //});
+  //}
 }

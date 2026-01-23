@@ -85,3 +85,33 @@ $theme: mat.define-theme(
 
   --mat-form-field-container-text-size: 1.3rem;
 }
+
+app-trip-table {
+  @include mat.table-overrides(
+    (
+      background-color: transparent,
+      //header-headline-color: red,
+      //header-headline-font: 'Unbounded',
+      header-headline-size: 16px,
+      row-item-outline-color: var(--p-slate-100),
+      row-item-label-text-line-height: 64px,
+      //row-item-outline-width: 1px,
+       //header-headline-color: var(--p-slate-500),
+    )
+  );
+}
+
+.home-faq {
+  @include mat.expansion-overrides(
+    (
+      actions-divider-color: transparent,
+      container-background-color: transparent,
+      //container-text-font: 'Unbounded',
+      //header-text-font: 'Unbounded',
+      header-text-size: 22px,
+      header-collapsed-state-height: 72px,
+      header-expanded-state-height: 64px,
+      container-elevation-shadow: 0px 3px 0px -2px rgba(0, 0, 0, 0.2),
+    )
+  );
+}

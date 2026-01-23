@@ -11,7 +11,7 @@ import { Component } from '@angular/core';
           <h1 class="text-5xl md:text-7xl font-bold text-slate-800 mb-6 tracking-tight">
             Statistiche di puntualità
             <span
-              class="block text-transparent bg-clip-text bg-gradient-to-r from-purple-500 to-pink-500"
+              class="block text-transparent bg-clip-text bg-linear-to-r from-green-500 to-blue-500"
             >
               in Valtellina
             </span>
@@ -19,41 +19,13 @@ import { Component } from '@angular/core';
 
           <p class="text-xl text-slate-600 max-w-2xl mx-auto">
             Trasformiamo dati effimeri in statistiche accessibili.
-            <span class="block"
-              >Una dashboard visiva per comprendere la viabilità ferroviaria valtellinese.</span
-            >
+            <span class="block">
+              Una sguardo immediato sulla viabilità ferroviaria valtellinese.
+            </span>
           </p>
         </div>
 
-        <!-- Cards -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <!--app-stat-card
-        title="Ritardo Medio"
-        value="23.5 min"
-        trend="+5.2%"
-        [icon]="Clock"
-        color="purple"
-        [data]="[12, 19, 23, 18, 28, 20, 23]"
-      ></app-stat-card>
-
-      <app-stat-card
-        title="Treni Monitorati"
-        value="1,247"
-        trend="+12.3%"
-        [icon]="Train"
-        color="blue"
-        [data]="[800, 950, 1100, 980, 1200, 1150, 1247]"
-      ></app-stat-card>
-
-      <app-stat-card
-        title="Puntualità"
-        value="76.8%"
-        trend="-3.1%"
-        [icon]="TrendingUp"
-        color="pink"
-        [data]="[80, 78, 82, 77, 79, 75, 76.8]"
-      ></app-stat-card-->
-        </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6"></div>
       </div>
     </div>
   `,
