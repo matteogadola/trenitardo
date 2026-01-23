@@ -176,6 +176,7 @@ export interface FilterState {
                 [matDatepicker]="picker"
                 placeholder="Seleziona una data"
                 (click)="picker.open()"
+                (keydown)="$event.stopPropagation()"
                 [formField]="filtersForm.date"
                 min="2026-01-16"
                 class="text-center cursor-pointer"

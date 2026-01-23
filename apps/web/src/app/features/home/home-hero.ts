@@ -4,8 +4,8 @@ import { Component } from '@angular/core';
   selector: 'home-hero',
   imports: [],
   template: `
-    <div class="pt-10 pb-5">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-16 relative">
+    <div class="pt-24 lg:pt-32 pb-12 lg:pb-20">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
         <!-- Header -->
         <div class="text-center mb-16">
           <h1 class="text-5xl md:text-7xl font-bold text-slate-800 mb-6 tracking-tight">
@@ -24,8 +24,6 @@ import { Component } from '@angular/core';
             </span>
           </p>
         </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6"></div>
       </div>
     </div>
   `,

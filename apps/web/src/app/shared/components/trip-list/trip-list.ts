@@ -64,7 +64,7 @@ import { TripStatusPipe } from '../../pipes/trip-pipe';
                   >
                     {{ trip.actualArrivalTime | time }}
                   </span>
-                  <span class="text-base text-gray-600 font-medium leading-tight">
+                  <span class="text-base text-gray-600 font-medium leading-tight text-right">
                     {{ trip.destination }}
                   </span>
                 </div>
