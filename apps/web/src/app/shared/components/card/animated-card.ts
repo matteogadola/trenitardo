@@ -6,26 +6,62 @@ import {
   ViewEncapsulation,
 } from '@angular/core';
 
+type ColorPreset = 'emerald' | 'ocean' | 'sunset' | 'purple' | 'rose';
+
+interface PresetConfig {
+  blob1: string;
+  blob2: string;
+  background: string;
+  grid: string;
+}
+
+const COLOR_PRESETS: Record<ColorPreset, PresetConfig> = {
+  emerald: {
+    blob1: 'from-teal-300 to-lime-300',
+    blob2: 'from-emerald-100 to-cyan-200',
+    background: 'from-white via-slate-50 to-emerald-50',
+    grid: 'rgba(16, 185, 129, 0.06)',
+  },
+  ocean: {
+    blob1: 'from-blue-300 to-cyan-300',
+    blob2: 'from-indigo-300 to-blue-400',
+    background: 'from-white via-blue-50 to-cyan-50',
+    grid: 'rgba(59, 130, 246, 0.06)',
+  },
+  sunset: {
+    blob1: 'from-orange-300 to-pink-300',
+    blob2: 'from-red-300 to-amber-300',
+    background: 'from-white via-orange-50 to-pink-50',
+    grid: 'rgba(249, 115, 22, 0.06)',
+  },
+  purple: {
+    blob1: 'from-purple-300 to-fuchsia-300',
+    blob2: 'from-violet-300 to-purple-400',
+    background: 'from-white via-purple-50 to-fuchsia-50',
+    grid: 'rgba(168, 85, 247, 0.06)',
+  },
+  rose: {
+    blob1: 'from-rose-300 to-pink-300',
+    blob2: 'from-red-300 to-rose-400',
+    background: 'from-white via-rose-50 to-pink-50',
+    grid: 'rgba(244, 63, 94, 0.06)',
+  },
+};
+
 @Component({
   selector: 'app-animated-card',
   imports: [],
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
   template: `
-    <div
-      class="card-entrance relative bg-linear-to-br from-white via-slate-50 to-emerald-50 rounded-3xl shadow-[0_8px_32px_rgba(16,185,129,0.05),0_20px_60px_rgba(16,185,129,0.05)] border border-emerald-100/50 overflow-hidden max-w-5xl w-full p-8"
-    >
+    <div [class]="cardClasses()">
       <div class="absolute inset-0 overflow-hidden pointer-events-none">
-        <div
-          class="blob-anim-1 absolute -top-1/2 -right-1/2 w-full h-full bg-linear-to-br from-teal-300 to-lime-300 rounded-full"
-        ></div>
+        <div [class]="blob1Classes()" [style]="blob1Styles()"></div>
 
-        <div
-          class="blob-anim-2 absolute -bottom-1/2 -left-1/2 w-full h-full bg-linear-to-br from-emerald-300 to-cyan-300 rounded-full"
-        ></div>
+        <div [class]="blob2Classes()" [style]="blob2Styles()"></div>
       </div>
 
-      <div class="grid-pattern-light absolute inset-0 pointer-events-none"></div>
+      <div class="absolute inset-0 pointer-events-none" [style]="gridStyles()"></div>
 
       <div class="relative z-10">
         <ng-content></ng-content>
@@ -33,10 +69,14 @@ import {
     </div>
   `,
   styles: `
-    /* 1. ENTRANCE ANIMATION (Unchanged logic)
-    */
+    :host {
+      display: block;
+      height: 100%;
+    }
+
     .card-entrance {
       opacity: 1;
+      height: 100%;
       transform: translateY(0) scale(1);
       transition:
         opacity 0.6s cubic-bezier(0.22, 1, 0.36, 1),
@@ -50,80 +90,105 @@ import {
       }
     }
 
-    /* 2. LOOPING BACKGROUND ANIMATIONS
-      Changes: Increased opacity slightly.
-      On dark mode, opacity varied between 0.03 and 0.06.
-      On light mode, we need a bit more presence: let's try 0.08 to 0.15.
-    */
-
-    @keyframes blob-motion-1-light {
+    @keyframes blob-motion-1 {
       0%,
       100% {
         transform: scale(1) rotate(0deg);
-        opacity: 0.08; /* Slightly increased from 0.03 */
+        opacity: 0.08;
       }
       50% {
         transform: scale(1.2) rotate(90deg);
-        opacity: 0.15; /* Slightly increased from 0.06 */
+        opacity: 0.15;
       }
     }
 
     .blob-anim-1 {
       opacity: 0.08;
-      transform: scale(1) rotate(0deg);
-      animation: blob-motion-1-light 20s linear infinite;
+      animation: blob-motion-1 20s linear infinite;
       will-change: transform, opacity;
     }
 
-    @keyframes blob-motion-2-light {
+    @keyframes blob-motion-2 {
       0%,
       100% {
         transform: scale(1.2) rotate(90deg);
-        opacity: 0.15; /* Slightly increased from 0.06 */
+        opacity: 0.15;
       }
       50% {
         transform: scale(1) rotate(0deg);
-        opacity: 0.08; /* Slightly increased from 0.03 */
+        opacity: 0.08;
       }
     }
 
     .blob-anim-2 {
       opacity: 0.15;
-      transform: scale(1.2) rotate(90deg);
-      animation: blob-motion-2-light 15s linear infinite;
+      animation: blob-motion-2 15s linear infinite;
       will-change: transform, opacity;
     }
 
-    /* 3. GRID PATTERN
-      Change: The lines must be dark (or colored) to show on white.
-      Using a very subtle emerald green rgba.
-    */
-    .grid-pattern-light {
-      opacity: 1; /* Controlled by the rgba below instead of main opacity */
-      /* Using rgba(16, 185, 129, 0.06) which is Tailwind emerald-500 at low opacity */
-      background-image:
-        linear-gradient(rgba(16, 185, 129, 0.06) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(16, 185, 129, 0.06) 1px, transparent 1px);
+    .grid-pattern {
+      opacity: 1;
       background-size: 50px 50px;
     }
   `,
 })
 export class AnimatedCard {
-  /**
-   * Palette via Signal:
-   * [0] -> Colore Blob 1
-   * [1] -> Colore Blob 2
-   * [2] -> Colore Sfondo Card
-   */
-  colors = input<string[]>(['#f472b6', '#fb923c', '#0f172a']);
+  preset = input<ColorPreset>('emerald');
+  delay1 = input<number>(0);
+  delay2 = input<number>(0);
 
-  // Generiamo le variabili CSS dinamicamente
-  paletteStyles = computed(() => {
-    const c = this.colors();
+  private config = computed(() => COLOR_PRESETS[this.preset()]);
+
+  // Calcola posizioni base usando il delay come seed
+  private blob2Position = computed(() => {
+    const delay = this.delay2();
+    // Usa il delay per calcolare offset di posizione
+    // Variando tra -60% e -40% per top/bottom e left/right
+    const topOffset = -50 + ((delay * 7) % 20) - 10; // range: -60% to -40%
+    const leftOffset = -50 + ((delay * 11) % 20) - 10; // range: -60% to -40%
+    const rotation = (delay * 37) % 360; // rotazione iniziale variabile
+
     return {
-      '--p-1': c[0] ?? '#f472b6',
-      '--p-2': c[1] ?? '#fb923c',
-      '--p-3': c[2] ?? '#0f172a',
+      top: `${topOffset}%`,
+      left: `${leftOffset}%`,
+      rotation: `${rotation}deg`,
+    };
+  });
+
+  cardClasses = computed(
+    () =>
+      `card-entrance relative bg-gradient-to-br ${this.config().background} rounded-3xl shadow-[0_8px_32px_rgba(16,185,129,0.05),0_20px_60px_rgba(16,185,129,0.05)] border border-emerald-100/50 overflow-hidden max-w-5xl w-full p-8`,
+  );
+
+  blob1Classes = computed(
+    () =>
+      `blob-anim-1 absolute -top-1/2 -right-1/2 w-full h-full bg-gradient-to-br ${this.config().blob1} rounded-full`,
+  );
+
+  blob2Classes = computed(
+    () =>
+      `blob-anim-2 absolute w-full h-full bg-gradient-to-br ${this.config().blob2} rounded-full`,
+  );
+
+  blob1Styles = computed(() => ({
+    'animation-delay': `${this.delay1()}s`,
+  }));
+
+  blob2Styles = computed(() => {
+    const pos = this.blob2Position();
+    return {
+      'animation-delay': `${this.delay2()}s`,
+      top: pos.top,
+      left: pos.left,
+      transform: `rotate(${pos.rotation})`,
+    };
+  });
+
+  gridStyles = computed(() => {
+    const gridColor = this.config().grid;
+    return {
+      'background-image': `linear-gradient(${gridColor} 1px, transparent 1px), linear-gradient(90deg, ${gridColor} 1px, transparent 1px)`,
+      'background-size': '50px 50px',
     };
   });
 }

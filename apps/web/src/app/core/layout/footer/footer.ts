@@ -6,7 +6,7 @@ import { Logo } from '../logo';
   selector: 'app-footer',
   imports: [FooterSocial, Logo],
   template: `
-    <div class="flex flex-col items-center justify-center pt-16 pb-8 w-content gap-4">
+    <div class="flex flex-col items-center justify-center pt-24 pb-8 w-content gap-4">
       <app-logo [withIcon]="false" />
       <footer-social />
     </div>

@@ -4,13 +4,13 @@ export const routes: Routes = [
   {
     path: '',
     pathMatch: 'full',
-    title: 'Trenitardo - Home',
+    title: 'Trenitardo',
     loadComponent: () => import('app/features/home/home-page').then((c) => c.HomePage),
   },
   {
     path: 'runs',
     pathMatch: 'full',
-    title: 'Trenitardo - Runs',
+    title: 'Trenitardo',
     loadComponent: () => import('app/features/runs/runs-page').then((c) => c.RunsPage),
   },
   { path: '**', redirectTo: '' },

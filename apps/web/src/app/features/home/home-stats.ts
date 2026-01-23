@@ -8,15 +8,13 @@ import {
   signal,
 } from '@angular/core';
 import { Trip } from '@repo/types';
-import { Card } from '@app/shared/components/card/card';
 import { ChartModule } from 'primeng/chart';
-import { isPlatformBrowser } from '@angular/common';
 import { AnimatedCard } from '@app/shared/components/card/animated-card';
 import { MathCeilPipe } from '../../shared/pipes/math-pipe';
 
 @Component({
   selector: 'home-stats',
-  imports: [Card, ChartModule, AnimatedCard, MathCeilPipe],
+  imports: [ChartModule, AnimatedCard, MathCeilPipe],
   template: `
     <div class="stats-grid">
       <app-animated-card>
@@ -31,7 +29,7 @@ import { MathCeilPipe } from '../../shared/pipes/math-pipe';
             @if (cancelledTrips().length > 0) {
               @let text = cancelledTrips().length === 1 ? 'cancellato' : 'cancellati';
               <div>
-                <h3 class="text-slate-600 uppercase">text</h3>
+                <h3 class="text-slate-600 uppercase">{{ text }}</h3>
                 <p class="text-3xl text-slate-800">{{ cancelledTrips().length }}</p>
               </div>
             }
@@ -52,71 +50,44 @@ import { MathCeilPipe } from '../../shared/pipes/math-pipe';
           />
         </div>
       </app-animated-card>
-      <app-animated-card>
+      <app-animated-card [delay2]="2">
         <div class="flex flex-col gap-4">
           <div class="flex justify-between">
             <div>
-              <h3 class="text-slate-600 uppercase">Ritardo totale</h3>
-              <p class="text-3xl text-slate-800">{{ totalDelay() }} minuti</p>
+              @if (totalDelay() > 0) {
+                <h3 class="text-slate-600 uppercase">Ritardo totale</h3>
+                <p class="text-3xl text-slate-800">{{ totalDelay() }} minuti</p>
+              }
             </div>
             <div>
-              <h3 class="text-slate-600 uppercase">Ritardo medio</h3>
-              <p class="text-3xl text-slate-800">
-                {{ totalDelay() / trips().length | ceil }} minuti
-              </p>
+              @if (avgDelay() > 0) {
+                <h3 class="text-slate-600 uppercase">Ritardo medio</h3>
+                <p class="text-3xl text-slate-800">{{ avgDelay() | ceil }} minuti</p>
+              }
             </div>
           </div>
-          <div>
-            <h3 class="text-slate-600 uppercase">Treni in orario</h3>
-            <p class="text-3xl text-slate-800">
-              {{ ((onTimeTrips().length / trips().length) * 100).toFixed(0) }}%
-            </p>
+          <div class="flex justify-between">
+            <div>
+              <h3 class="text-slate-600 uppercase">Treni in orario</h3>
+              <p class="text-3xl text-slate-800">
+                {{ ((onTimeTrips().length / trips().length) * 100).toFixed(0) }}%
+              </p>
+            </div>
+            <div>
+              @if (medianDelay() > 0) {
+                <h3 class="text-slate-600 uppercase">Ritardo mediano</h3>
+                <p class="text-3xl text-slate-800">{{ medianDelay() }} minuti</p>
+              }
+            </div>
           </div>
         </div>
       </app-animated-card>
-      <!--app-card
-        title="Treni Monitorati"
-        value="{{ trips().length }}"
-        trend="+5.2%"
-        icon="Clock"
-        color="blue"
-        [data]="[12, 19, 23, 18, 28, 20, 23]"
-      >
-        <div class="flex justify-between">
-          <div>
-            <h3 class="text-sm font-semibold text-slate-600 mb-1">Treni</h3>
-            <p class="text-3xl font-bold text-slate-800 mb-6">{{ trips().length }}</p>
-            dui cui {{ delayedTrips().length }} in ritardo
-            @if (delayedTrips().length > 0) {
-              @let text = 'in ritardo';
-              <p>e {{ delayedTrips().length }} {{ text }}</p>
-            }
-            @if (cancelledTrips().length > 0) {
-              @let text = cancelledTrips().length === 1 ? 'cancellato' : 'cancellati';
-              <p>e {{ cancelledTrips().length }} {{ text }}</p>
-            }
-            @if (modifiedTrips().length > 0) {
-              @let text = modifiedTrips().length === 1 ? 'deviato' : 'deviati';
-              <p>e {{ modifiedTrips().length }} {{ text }}</p>
-            }
-          </div>
-          <div class="w-1/2 flex justify-center items-center">
-            <p-chart
-              type="pie"
-              [data]="statusData()"
-              [options]="options()"
-              [plugins]="chartPlugins"
-              class="w-35"
-            />
-          </div>
-        </div>
-      </app-card-->
     </div>
   `,
   styles: `
     .stats-grid {
       display: grid;
-      gap: 1rem;
+      gap: 2rem;
       grid-template-columns: repeat(1, minmax(0, 1fr));
 
       @media (width >= 64rem /* 1024px */) {
@@ -127,16 +98,22 @@ import { MathCeilPipe } from '../../shared/pipes/math-pipe';
 })
 export class HomeStats {
   readonly trips = input<Trip[]>([]);
-
-  readonly onTimeTrips = computed(() => this.trips().filter((trip) => trip.status === 'on-time'));
-  readonly delayedTrips = computed(() => this.trips().filter((trip) => trip.status === 'delayed'));
-  readonly cancelledTrips = computed(() =>
-    this.trips().filter((trip) => trip.status === 'cancelled'),
-  );
+  readonly onTimeTrips = computed(() => this.trips().filter((t) => t.status === 'on-time'));
+  readonly delayedTrips = computed(() => this.trips().filter((t) => t.status === 'delayed'));
+  readonly realDelayedTrips = computed(() => this.trips().filter((t) => t.delay > 0));
+  readonly cancelledTrips = computed(() => this.trips().filter((t) => t.status === 'cancelled'));
   readonly modifiedTrips = computed(() =>
-    this.trips().filter((trip) => trip.status === 'partially-cancelled'),
+    this.trips().filter((t) => t.status === 'partially-cancelled'),
   );
-  readonly totalDelay = computed(() => this.delayedTrips().reduce((a, v) => a + (v.delay ?? 0), 0));
+
+  readonly totalDelay = computed(() => this.realDelayedTrips().reduce((a, v) => a + v.delay, 0));
+  readonly avgDelay = computed(() => this.totalDelay() / this.realDelayedTrips().length);
+  readonly medianDelay = computed(() => {
+    const delays = this.realDelayedTrips().map((trip) => trip.delay);
+    delays.sort((a, b) => a - b);
+    const mid = Math.floor(delays.length / 2);
+    return delays.length % 2 === 0 ? (delays[mid - 1] + delays[mid]) / 2 : delays[mid];
+  });
 
   data = [];
   statusData = computed(() => {
