@@ -14,8 +14,7 @@ import { Logo } from '../logo';
       <div class="container mx-auto h-[80px] flex items-center px-6 w-full">
         <div class="flex items-center justify-between w-full">
           <span class=""></span>
-          <span class=""><app-logo /></span>
-          <!--<header-logo />-->
+          <app-logo [scaleIcon]="isScrolled()" />
           <span class=""></span>
         </div>
       </div>
@@ -93,9 +92,11 @@ export class Header {
   private readonly MAX_SCROLL_PX = 50; // Dopo 300px l'effetto è al massimo
   private readonly MAX_BLUR_PX = 12; // Blur massimo richiesto
   private readonly MAX_OPACITY = 0.7; // Opacità massima sfondo (0.7 = 70%)
+  private readonly MAX_SCALE = 1;
 
   currentBlur = signal<number>(0);
   currentOpacity = signal<number>(0);
+  currentScale = signal<number>(0);
 
   isScrolled = signal<boolean>(false);
 
@@ -124,12 +125,14 @@ export class Header {
     // Calcoliamo i valori precisi
     const blur = progress * this.MAX_BLUR_PX;
     const opacity = progress * this.MAX_OPACITY;
+    const scale = progress * this.MAX_SCALE;
 
     // Aggiorniamo i signal solo se i valori sono cambiati significativamente
     // (toFixed aiuta a evitare aggiornamenti per micro-variazioni decimali)
     if (this.currentBlur().toFixed(1) !== blur.toFixed(1)) {
       this.currentBlur.set(blur);
       this.currentOpacity.set(opacity);
+      this.currentScale.set(scale);
     }
   }
 }

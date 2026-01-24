@@ -46,7 +46,7 @@ import { MathCeilPipe } from '../../shared/pipes/math-pipe';
             [data]="statusData()"
             [options]="options()"
             [plugins]="chartPlugins"
-            class="w-50"
+            class="w-50 h-50"
           />
         </div>
       </app-animated-card>

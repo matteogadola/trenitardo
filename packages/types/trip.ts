@@ -47,6 +47,7 @@ export interface Trip {
 }
 
 export interface TripStop {
+  id: string;
   name: string;
   scheduledTime: number | null;
   actualTime: number | null;

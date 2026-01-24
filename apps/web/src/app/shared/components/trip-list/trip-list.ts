@@ -19,14 +19,11 @@ import { TripStatusPipe } from '../../pipes/trip-pipe';
               <!-- Treno -->
               <div class="flex items-center gap-2 mb-3">
                 <app-line-type-icon [type]="trip.line.type" />
-                <span class="ml-2">{{ trip.run.code }}</span>
-
-                <!--span class="text-sm font-extrabold text-gray-800 tracking-tight uppercase">
-                  {{ trip.run.code }}
-                </span-->
+                <span class="ml-1">{{ trip.run.code }}</span>
               </div>
 
               <div class="grid grid-cols-3 items-start">
+                <!-- Partenza -->
                 <div class="flex flex-col">
                   <span class="text-[22px] font-bold text-[#005965] leading-none">
                     {{ trip.actualDepartureTime | time }}
@@ -56,6 +53,7 @@ import { TripStatusPipe } from '../../pipes/trip-pipe';
                     </span>
                   }
                 </div>
+                <!-- Arrivo -->
                 <div class="flex flex-col items-end">
                   <span
                     class="text-[22px]  text-[#005965] leading-none"

@@ -31,4 +31,5 @@ import { NgOptimizedImage } from '@angular/common';
 })
 export class Logo {
   withIcon = input<boolean>(true);
+  scaleIcon = input<boolean>(false);
 }
