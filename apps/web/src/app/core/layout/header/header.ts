@@ -1,6 +1,4 @@
 import { Component, inject, signal, DestroyRef, afterNextRender } from '@angular/core';
-import { MenubarModule } from 'primeng/menubar';
-import { AvatarModule } from 'primeng/avatar';
 import { RouterModule } from '@angular/router';
 import { ScrollDispatcher } from '@angular/cdk/scrolling';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -8,7 +6,7 @@ import { Logo } from '../logo';
 
 @Component({
   selector: 'app-header',
-  imports: [MenubarModule, AvatarModule, RouterModule, Logo],
+  imports: [RouterModule, Logo],
   template: `
     <header [style.--header-blur.px]="currentBlur()" [style.--header-opacity]="currentOpacity()">
       <div class="container mx-auto h-[80px] flex items-center px-6 w-full">

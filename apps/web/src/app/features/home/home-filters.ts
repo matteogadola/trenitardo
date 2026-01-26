@@ -10,14 +10,7 @@ import {
   signal,
 } from '@angular/core';
 import { FormControl, Validators } from '@angular/forms';
-import { DatePickerModule } from 'primeng/datepicker';
-import { AutoCompleteModule, AutoCompleteSelectEvent } from 'primeng/autocomplete';
-import { ButtonModule } from 'primeng/button';
-import { FloatLabelModule } from 'primeng/floatlabel';
-import { FluidModule } from 'primeng/fluid';
 import { form, FormField, submit } from '@angular/forms/signals';
-import { TODAY } from '@app/core/utils/date-util';
-import type { Line } from '@repo/types';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -40,10 +33,6 @@ export interface FilterState {
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     FormField,
-    AutoCompleteModule,
-    ButtonModule,
-    FloatLabelModule,
-    FluidModule,
     MatButtonModule,
     MatInputModule,
     MatIconModule,

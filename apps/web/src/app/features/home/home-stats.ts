@@ -9,7 +9,6 @@ import {
   signal,
 } from '@angular/core';
 import { Trip } from '@repo/types';
-import { ChartModule } from 'primeng/chart';
 import { AnimatedCard } from '@app/shared/components/card/animated-card';
 import { MathCeilPipe } from '../../shared/pipes/math-pipe';
 import { AnimateDirective } from '@app/shared/directives/animate';
@@ -20,7 +19,7 @@ import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 @Component({
   selector: 'home-stats',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [ChartModule, AnimatedCard, MathCeilPipe, AnimateDirective, TripStatusChart],
+  imports: [AnimatedCard, MathCeilPipe, AnimateDirective, TripStatusChart],
   template: `
     <div class="stats-grid">
       <app-animated-card>
@@ -47,7 +46,7 @@ import { toObservable, toSignal } from '@angular/core/rxjs-interop';
               </div>
             }
           </div>
-          <div class="w-50 h-50">
+          <div class="w-1/2 h-full" [class.w-full]="trips().length === onTimeTrips().length">
             <trip-status-chart [data]="statusChartData()" style="height: 200px;" />
             <!--div echarts [options]="chartOption" style="height: 200px;"></div-->
           </div>
@@ -125,13 +124,16 @@ export class HomeStats {
     return delays.length % 2 === 0 ? (delays[mid - 1] + delays[mid]) / 2 : delays[mid];
   });
 
-  statusChartData = computed(() => {
-    return [
-      { value: this.onTimeTrips().length, name: 'In orario', itemStyle: { color: '#6BCF8B' } },
-      { value: this.delayedTrips().length, name: 'In ritardo', itemStyle: { color: '#FF6B7A' } },
-      { value: this.cancelledTrips().length, name: 'Soppressi', itemStyle: { color: '#353831' } },
-      { value: this.modifiedTrips().length, name: 'Deviati', itemStyle: { color: '#FFAB6B' } },
-    ];
+  readonly statusChartData = computed(() => {
+    return {
+      total: this.trips().length,
+      data: [
+        { value: this.onTimeTrips().length, name: 'In orario', itemStyle: { color: '#6BCF8B' } },
+        { value: this.delayedTrips().length, name: 'In ritardo', itemStyle: { color: '#FF6B7A' } },
+        { value: this.cancelledTrips().length, name: 'Soppressi', itemStyle: { color: '#353831' } },
+        { value: this.modifiedTrips().length, name: 'Deviati', itemStyle: { color: '#FFAB6B' } },
+      ],
+    };
   });
 
   data = [];

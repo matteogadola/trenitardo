@@ -3,13 +3,18 @@ import { ChangeDetectionStrategy, Component, effect, input, signal } from '@angu
 import { NgxEchartsDirective, provideEchartsCore } from 'ngx-echarts';
 import * as echarts from 'echarts/core';
 import { PieChart } from 'echarts/charts';
-import { LegendComponent, TooltipComponent } from 'echarts/components';
+import { GraphicComponent, LegendComponent, TooltipComponent } from 'echarts/components';
 import { ECharts, EChartsCoreOption } from 'echarts/core';
 import { CanvasRenderer } from 'echarts/renderers';
 import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
 import { debounceTime, skipUntil, skipWhile, tap } from 'rxjs';
 
-echarts.use([CanvasRenderer, PieChart, LegendComponent, TooltipComponent]);
+echarts.use([CanvasRenderer, PieChart, LegendComponent, GraphicComponent]);
+
+type Data = {
+  total: number;
+  data: { value: number; name: string; itemStyle?: any }[];
+};
 
 @Component({
   selector: 'trip-status-chart',
@@ -20,19 +25,18 @@ echarts.use([CanvasRenderer, PieChart, LegendComponent, TooltipComponent]);
     echarts
     [options]="options"
     (chartInit)="onChartInit($event)"
+    (chartMouseOver)="onChartMouseOver($event)"
+    (chartMouseOut)="onChartMouseOut()"
     class="chart"
     style="height: 200px;"
   ></div>`,
   styles: ``,
 })
 export class TripStatusChart {
-  readonly data = input.required<{ value: number; name: string; itemStyle?: any }[]>();
+  readonly data = input.required<Data>();
   private readonly echartsInstance = signal<ECharts | undefined>(undefined);
 
   options: EChartsCoreOption = {
-    tooltip: {
-      show: false,
-    },
     legend: {
       show: false,
     },
@@ -48,12 +52,7 @@ export class TripStatusChart {
           position: 'center',
         },
         emphasis: {
-          label: {
-            show: true,
-            fontSize: 16,
-            fontWeight: 'bold',
-            formatter: '{c}\n{b}',
-          },
+          label: { show: false },
         },
         labelLine: {
           show: false,
@@ -66,6 +65,22 @@ export class TripStatusChart {
         //],
       },
     ],
+    graphic: [
+      {
+        type: 'text',
+        silent: true,
+        left: 'center',
+        top: 'center',
+        style: {
+          text: '',
+          textAlign: 'center',
+          textVerticalAlign: 'middle',
+          fill: '#333', // Colore del testo
+          fontSize: 20,
+          fontWeight: 'bold',
+        },
+      },
+    ],
   };
 
   mergeOption: EChartsCoreOption = this.options;
@@ -74,11 +89,43 @@ export class TripStatusChart {
     this.echartsInstance.set(ec);
   }
 
+  onChartMouseOver(event: any) {
+    if (event.componentType === 'series') {
+      const name = event.name;
+      const value = event.value;
+
+      this.updateCenterText(`${value}\n${name}`);
+    }
+  }
+
+  // Funzione che gestisce l'uscita del mouse dallo spicchio
+  onChartMouseOut() {
+    this.updateCenterText(`${this.data().total}\nTreni`);
+  }
+
+  // Metodo di supporto per aggiornare solo il testo centrale
+  private updateCenterText(newText: string) {
+    if (this.echartsInstance) {
+      this.echartsInstance()?.setOption({
+        graphic: [
+          {
+            style: {
+              text: newText,
+              // Ripetiamo l'allineamento qui per evitare che si resetti
+              textAlign: 'center',
+              textVerticalAlign: 'middle',
+            },
+          },
+        ],
+      });
+    }
+  }
+
   constructor() {
     toObservable(this.data)
       .pipe(
         takeUntilDestroyed(),
-        skipWhile((data) => data.reduce((a, v) => a + v.value, 0) === 0),
+        skipWhile((data) => data.data.reduce((a, v) => a + v.value, 0) === 0),
         debounceTime(100),
       )
       .subscribe((data) => {
@@ -89,7 +136,10 @@ export class TripStatusChart {
               type: 'pie',
               radius: ['55%', '95%'],
               avoidLabelOverlap: false,
-              itemStyle: {
+              emphasis: {
+                label: { show: false },
+              },
+              /*itemStyle: {
                 borderRadius: 10,
                 borderColor: '#fff',
                 borderWidth: 2,
@@ -105,17 +155,37 @@ export class TripStatusChart {
                   fontWeight: 'bold',
                   formatter: '{c}\n{b}',
                 },
+              },*/
+              label: {
+                show: false,
+                position: 'center',
               },
               labelLine: {
                 show: false,
               },
-              data,
+              data: data.data,
+            },
+          ],
+          graphic: [
+            {
+              type: 'text',
+              silent: true,
+              left: 'center',
+              top: 'center',
+              style: {
+                text: `${data.total}\nTreni`,
+                textAlign: 'center',
+                textVerticalAlign: 'middle',
+                fill: '#333', // Colore del testo
+                fontSize: 20,
+                fontWeight: 'bold',
+              },
             },
           ],
         };
 
         this.echartsInstance()?.setOption(options, {
-          replaceMerge: ['series'],
+          replaceMerge: ['series', 'graphic'],
         });
       });
 

@@ -2,14 +2,12 @@ import { Component, input } from '@angular/core';
 import { Trip } from '@repo/types';
 import { TimePipe } from '@shared/pipes/time-pipe';
 import { LineTypeIcon } from '../line-type-icon/line-type-icon';
-import { ButtonModule } from 'primeng/button';
-import { ChipModule } from 'primeng/chip';
 import { MatTableModule } from '@angular/material/table';
 import { TripStatusPipe } from '../../pipes/trip-pipe';
 
 @Component({
   selector: 'app-trip-table',
-  imports: [MatTableModule, ButtonModule, TimePipe, LineTypeIcon, ChipModule, TripStatusPipe],
+  imports: [MatTableModule, TimePipe, LineTypeIcon, TripStatusPipe],
   template: `
     <table mat-table [dataSource]="trips()" class="mat-elevation-z8">
       <!--- Note that these columns can be defined in any order.

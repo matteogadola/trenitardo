@@ -1,9 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, computed, input, OnInit } from '@angular/core';
 import { TimePipe } from '../../pipes/time-pipe';
-import { BadgeModule } from 'primeng/badge';
-import { OverlayBadgeModule } from 'primeng/overlaybadge';
-import { TagModule } from 'primeng/tag';
 
 type CardColor = 'gray' | 'purple' | 'blue' | 'pink';
 
@@ -12,12 +9,12 @@ type CardColor = 'gray' | 'purple' | 'blue' | 'pink';
 
 @Component({
   selector: 'app-time-delay',
-  imports: [TimePipe, BadgeModule, TagModule],
+  imports: [TimePipe],
   template: `
     @if (scheduledTime() !== null && actualTime() !== null) {
       <span>{{ actualTime() | time }}</span>
 
-      <p-tag value="+20 minuti" />
+      <!--p-tag value="+20 minuti" /-->
       @if (delay() > 20) {
         <span class="bg-red-700 inline-flex items-center px-3 py-1 rounded-full text-xs"
           >+{{ delay() }} min</span

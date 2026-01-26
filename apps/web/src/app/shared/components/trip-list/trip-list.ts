@@ -1,5 +1,4 @@
 import { Component, input } from '@angular/core';
-import { CardModule } from 'primeng/card';
 import { Trip } from '@repo/types';
 import { LineTypeIcon } from '../line-type-icon/line-type-icon';
 import { TimePipe, ReadableDurationPipe } from '../../pipes/time-pipe';
@@ -7,7 +6,7 @@ import { TripStatusPipe } from '../../pipes/trip-pipe';
 
 @Component({
   selector: 'app-trip-list',
-  imports: [CardModule, LineTypeIcon, TimePipe, ReadableDurationPipe, TripStatusPipe],
+  imports: [LineTypeIcon, TimePipe, ReadableDurationPipe, TripStatusPipe],
   template: `
     <div [class]="class()">
       @for (trip of trips(); track trip.id) {
