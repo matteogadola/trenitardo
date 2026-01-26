@@ -6,7 +6,7 @@ import { Component } from '@angular/core';
   template: `
     <div class="flex justify-center items-center gap-8">
       <!-- Linkedin -->
-      <a href="https://www.linkedin.com/in/matteogadola/" target="_blank">
+      <a href="https://www.linkedin.com/in/matteogadola/" target="_blank" aria-label="Linkedin">
         <svg
           xmlns="http://www.w3.org/2000/svg"
           viewBox="0 0 24 24"
@@ -31,7 +31,7 @@ import { Component } from '@angular/core';
         </svg>
       </a>
       <!-- Instagram -->
-      <a href="https://www.instagram.com/matteogadola/" target="_blank">
+      <a href="https://www.instagram.com/matteogadola/" target="_blank" aria-label="Instagram">
         <svg
           xmlns="http://www.w3.org/2000/svg"
           viewBox="0 0 24 24"
@@ -54,7 +54,7 @@ import { Component } from '@angular/core';
         </svg>
       </a>
       <!-- Github -->
-      <a href="https://github.com/matteogadola/trenitardo" target="_blank">
+      <a href="https://github.com/matteogadola/trenitardo" target="_blank" aria-label="Github">
         <svg
           xmlns="http://www.w3.org/2000/svg"
           viewBox="0 0 24 24"

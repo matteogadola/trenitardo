@@ -26,7 +26,7 @@ import { TripStatusPipe } from '../../pipes/trip-pipe';
                 <!-- Partenza -->
                 <div class="flex flex-col">
                   <span class="text-[22px] font-bold text-[#005965] leading-none">
-                    {{ trip.actualDepartureTime | time }}
+                    {{ trip.actualDepartureTime }}
                   </span>
                   <span class="text-base text-gray-600 font-medium leading-tight">
                     {{ trip.origin }}
@@ -60,7 +60,7 @@ import { TripStatusPipe } from '../../pipes/trip-pipe';
                     [class.font-bold]="trip.isCompleted"
                     [class.italic]="!trip.isCompleted"
                   >
-                    {{ trip.actualArrivalTime | time }}
+                    {{ trip.actualArrivalTime }}
                   </span>
                   <span class="text-base text-gray-600 font-medium leading-tight text-right">
                     {{ trip.destination }}
@@ -68,7 +68,11 @@ import { TripStatusPipe } from '../../pipes/trip-pipe';
                 </div>
               </div>
               <div class="mt-4 text-sm text-gray-600">
-                {{ trip.statusMessage }}
+                @if (trip.statusMessage) {
+                  {{ trip.statusMessage }}
+                } @else if (trip.delayReason) {
+                  {{ trip.delayReason }}
+                }
               </div>
             </div>
           </div>

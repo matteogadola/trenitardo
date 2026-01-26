@@ -8,7 +8,7 @@ import {
   QueryConstraint,
   where,
 } from '@angular/fire/firestore';
-import { catchError, map, Observable, of } from 'rxjs';
+import { catchError, filter, map, Observable, of } from 'rxjs';
 import { Line, Run, Trip } from '@repo/types';
 
 @Injectable({
@@ -18,7 +18,7 @@ export class ApiService {
   private readonly _firestore = inject(Firestore);
 
   getLines(): Observable<Line[]> {
-    const collectionRef = collection(this._firestore, 'lines');
+    const collectionRef = this.inferCollection<Line>('lines');
     const constaintRef: QueryConstraint[] = [
       where('status', '==', 'active'),
       //orderBy('code', 'asc'),
@@ -32,7 +32,7 @@ export class ApiService {
   }
 
   getRuns(): Observable<Run[]> {
-    const collectionRef = collection(this._firestore, 'runs');
+    const collectionRef = this.inferCollection<Run>('runs');
 
     //const constaints: QueryConstraint[] = [
     //  where('date', '>', date),
@@ -49,14 +49,27 @@ export class ApiService {
   }
 
   getTrips({ date }: { date?: string }): Observable<Trip[]> {
-    const collectionRef = collection(this._firestore, 'trips');
+    const collectionRef = this.inferCollection<Trip>('trips');
 
-    const constaints: QueryConstraint[] = [
-      where('date', '==', date),
-      orderBy('departureTime', 'asc'),
-    ];
-    const queryRef = query(collectionRef, ...constaints);
-    //const queryRef = query(collectionRef, where('date', '==', date));
-    return collectionData(queryRef, { idField: 'id' }) as Observable<Trip[]>;
+    //const constaints: QueryConstraint[] = [
+    //  where('date', '==', date),
+    //  orderBy('departureTime', 'asc'),
+    //];
+    //const queryRef = query(collectionRef, ...constaints);
+    const queryRef = query(collectionRef, where('date', '==', date));
+    return collectionData(queryRef, { idField: 'id' }).pipe(
+      map((trips) =>
+        trips
+          .filter((item) => item.status !== 'scheduled')
+          .sort((a, b) => a.departureTime.localeCompare(b.departureTime)),
+      ),
+    );
+  }
+
+  inferCollection<T extends object>(path: string) {
+    return collection(this._firestore, path).withConverter({
+      toFirestore: (data: T) => data,
+      fromFirestore: (snap) => ({ id: snap.id, ...snap.data() }) as T,
+    });
   }
 }

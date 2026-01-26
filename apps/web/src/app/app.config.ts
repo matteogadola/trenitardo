@@ -6,8 +6,6 @@ import { provideAuth, getAuth } from '@angular/fire/auth';
 import { provideFirestore, getFirestore } from '@angular/fire/firestore';
 import { provideRemoteConfig, getRemoteConfig } from '@angular/fire/remote-config';
 import { provideAnalytics, getAnalytics } from '@angular/fire/analytics';
-import { providePrimeNG } from 'primeng/config';
-import Aura from '@primeuix/themes/aura';
 import { routes } from './app.routes';
 import { provideFirebaseConfig, FIREBASE_CONFIG_TOKEN } from './core/config/firebase-config';
 import { DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE } from '@angular/material/core';
@@ -29,10 +27,5 @@ export const appConfig: ApplicationConfig = {
     provideFirestore(() => getFirestore()),
     provideRemoteConfig(() => getRemoteConfig()),
     provideAnalytics(() => getAnalytics()),
-    providePrimeNG({
-      theme: {
-        preset: Aura,
-      },
-    }),
   ],
 };

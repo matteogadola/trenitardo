@@ -1,9 +1,10 @@
-import { Component, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 import { Trip } from '@repo/types';
 import { TripList } from '@app/shared/components/trip-list/trip-list';
 
 @Component({
   selector: 'home-trip-list',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [TripList],
   template: `
     <div [class]="class()">
@@ -22,6 +23,5 @@ import { TripList } from '@app/shared/components/trip-list/trip-list';
 })
 export class HomeTripList {
   readonly trips = input.required<Trip[]>();
-  readonly date = input<string>();
   readonly class = input<string>('');
 }

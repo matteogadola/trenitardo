@@ -96,7 +96,7 @@ import { TimePipe } from '../../shared/pipes/time-pipe';
 
                     <!-- Partenza -->
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-700">
-                      {{ run.departureTime | time }}
+                      {{ run.departureTime }}
                     </td>
 
                     <!-- Ritardo -->
@@ -104,7 +104,7 @@ import { TimePipe } from '../../shared/pipes/time-pipe';
                       <span
                         class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium"
                       >
-                        +{{ run.arrivalTime | time }} min
+                        +{{ run.arrivalTime }} min
                       </span>
                     </td>
 

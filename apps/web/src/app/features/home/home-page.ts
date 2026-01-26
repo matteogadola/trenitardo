@@ -1,27 +1,18 @@
-import {
-  Component,
-  ChangeDetectionStrategy,
-  inject,
-  resource,
-  signal,
-  afterNextRender,
-} from '@angular/core';
-import { CommonModule, NgOptimizedImage } from '@angular/common';
+import { Component, ChangeDetectionStrategy, inject, signal } from '@angular/core';
 import { HomeFilters } from './home-filters';
 import { HomeStats } from './home-stats';
 import { HomeTripList } from './home-trip-list';
 import { ApiService } from '@app/core/api/api-service';
-import { rxResource, toSignal } from '@angular/core/rxjs-interop';
+import { rxResource } from '@angular/core/rxjs-interop';
 import { HomeHero } from './home-hero';
 import { TODAY } from '@app/core/utils/date-util';
-import { Analytics, logEvent } from '@angular/fire/analytics';
 import { Spinner } from '@app/shared/components/spinner/spinner';
 import { HomeFaq } from './home-faq';
 
 @Component({
   selector: 'app-home-page',
-  imports: [CommonModule, HomeFilters, HomeStats, HomeTripList, HomeHero, Spinner, HomeFaq],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [HomeFilters, HomeStats, HomeTripList, HomeHero, Spinner, HomeFaq],
   template: `
     <div class="w-content pt-[80px]">
       <home-hero />
@@ -33,7 +24,7 @@ import { HomeFaq } from './home-faq';
             [isLoading]="tripsResource.isLoading()"
             (filterSubmit)="onFilterUpdate($event)"
           />
-          <home-trip-list [trips]="tripsResource.value()" [date]="date()" />
+          <home-trip-list [trips]="tripsResource.value()" />
         </div>
       } @placeholder {
         <app-spinner />
@@ -43,13 +34,11 @@ import { HomeFaq } from './home-faq';
       </section>
     </div>
   `,
-  styles: ``,
 })
 export class HomePage {
   private readonly apiService = inject(ApiService);
+  private readonly date = signal<string>(TODAY);
   readonly lines$ = this.apiService.getLines();
-
-  readonly date = signal<string>(TODAY);
 
   readonly tripsResource = rxResource({
     params: () => this.date(),
@@ -59,16 +48,5 @@ export class HomePage {
 
   onFilterUpdate(filter: any) {
     this.date.set(filter.date);
-  }
-
-  private analytics = inject(Analytics);
-
-  constructor() {
-    afterNextRender(() => {
-      logEvent(this.analytics, 'landing_page_view', {
-        campaign: 'launch_v1',
-        timestamp: new Date().toISOString(),
-      });
-    });
   }
 }

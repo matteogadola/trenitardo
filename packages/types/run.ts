@@ -6,19 +6,27 @@ export interface Run {
   id: string;
   code: string;
   codeName: string;
-  type: string;
-  name: string;
-  departureTime: number;
-  arrivalTime: number;
+  departureTime: string;
+  arrivalTime: string;
   origin: string;
   originId: string;
   destination: string;
   destinationId: string;
   direction: number;
-  isScheduled: boolean;
-  isScrapable: boolean;
-  status: string;
   line: Pick<Line, 'id' | 'code' | 'type' | 'name'>;
   createdAt: string;
   updatedAt: string;
+  serviceDays: number[];
+  servicePeriod: {
+    startDate: string;
+    endDate: string;
+  };
+  serviceExceptions: {
+    excludedDates: string[];
+    includedDates: string[];
+  };
+}
+
+export interface RunForSchedule extends Run {
+  date: string;
 }

@@ -9,6 +9,7 @@ import { Run } from './run';
 
 export type TripStatus =
   | 'unknown'
+  | 'scheduled'
   | 'on-time'
   //| 'early'
   | 'delayed'
@@ -27,17 +28,17 @@ export interface Trip {
   date: string;
   origin: string;
   destination: string;
-  departureTime: number;
+  departureTime: string;
   departureDelay: number;
-  actualDepartureTime: number | null;
-  arrivalTime: number;
-  actualArrivalTime: number | null;
+  actualDepartureTime: string | null;
+  arrivalTime: string;
+  actualArrivalTime: string | null;
   delay: number;
   delayReason?: string;
-  run: Pick<Run, 'id' | 'code' | 'direction' | 'origin' | 'destination'>;
+  run: Pick<Run, 'id' | 'code' | 'origin' | 'originId' | 'destination' | 'destinationId' | 'direction'>;
   line: Pick<Line, 'id' | 'code' | 'type' | 'name'>;
   lastUpdate: string;
-  lastStation: string;
+  lastStation?: string;
   status: TripStatus;
   statusMessage?: string;
   isDeparted: boolean;

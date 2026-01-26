@@ -1,7 +1,8 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 
 @Component({
   selector: 'home-hero',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [],
   template: `
     <div class="pt-24 lg:pt-32 pb-12 lg:pb-20">
@@ -27,8 +28,7 @@ import { Component } from '@angular/core';
       </div>
     </div>
   `,
-  styles: ``,
 })
 export class HomeHero {
-  stats: any[] = [];
+  //stats: any[] = [];
 }

@@ -8,6 +8,7 @@ import { MatInputModule } from '@angular/material/input';
 
 @Component({
   selector: 'home-faq',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     MatExpansionModule,
     MatIconModule,
