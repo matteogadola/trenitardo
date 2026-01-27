@@ -6,6 +6,7 @@
   <br />
   <img src="apps/web/public/images/trenitardo.webp">
 </div>
+<br />
 
 Trenitardo is a data-driven platform designed to monitor, aggregate, and visualize punctuality statistics for the Valtellina railway network. It transforms fragmented transit data into actionable performance insights.
 
