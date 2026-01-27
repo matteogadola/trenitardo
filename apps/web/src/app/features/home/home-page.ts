@@ -1,4 +1,12 @@
-import { Component, ChangeDetectionStrategy, inject, signal } from '@angular/core';
+import {
+  Component,
+  ChangeDetectionStrategy,
+  inject,
+  signal,
+  effect,
+  untracked,
+  linkedSignal,
+} from '@angular/core';
 import { HomeFilters } from './home-filters';
 import { HomeStats } from './home-stats';
 import { HomeTripList } from './home-trip-list';
@@ -8,6 +16,8 @@ import { HomeHero } from './home-hero';
 import { TODAY } from '@app/core/utils/date-util';
 import { Spinner } from '@app/shared/components/spinner/spinner';
 import { HomeFaq } from './home-faq';
+import { debounceTime, distinctUntilChanged, filter, Observable, skipWhile, startWith } from 'rxjs';
+import { Trip } from '@repo/types';
 
 @Component({
   selector: 'app-home-page',
@@ -19,15 +29,14 @@ import { HomeFaq } from './home-faq';
 
       @defer (when tripsResource.hasValue()) {
         <div class="flex flex-col gap-8">
-          <home-stats [trips]="tripsResource.value()" />
-          <home-filters
-            [isLoading]="tripsResource.isLoading()"
-            (filterSubmit)="onFilterUpdate($event)"
-          />
+          <home-stats [trips]="tripsResource.value()" [isLoading]="tripsResource.isLoading()" />
+          <home-filters [isLoading]="tripsResource.isLoading()" (change)="onFilterChange($event)" />
           <home-trip-list [trips]="tripsResource.value()" />
         </div>
       } @placeholder {
-        <app-spinner />
+        <div class="flex items-center justify-center">
+          <app-spinner />
+        </div>
       }
       <section class="hidden pt-24">
         <home-faq />
@@ -37,16 +46,16 @@ import { HomeFaq } from './home-faq';
 })
 export class HomePage {
   private readonly apiService = inject(ApiService);
-  private readonly date = signal<string>(TODAY);
+  private readonly range = signal<{ startDate: string; endDate?: string }>({ startDate: TODAY });
   readonly lines$ = this.apiService.getLines();
 
   readonly tripsResource = rxResource({
-    params: () => this.date(),
-    stream: ({ params: date }) => this.apiService.getTrips({ date }),
+    params: () => this.range(),
+    stream: ({ params: range }) => this.apiService.getTrips({ range }),
     defaultValue: [],
   });
 
-  onFilterUpdate(filter: any) {
-    this.date.set(filter.date);
+  onFilterChange(filter: any) {
+    this.range.set(filter);
   }
 }

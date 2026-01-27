@@ -7,7 +7,7 @@ import { GraphicComponent, LegendComponent, TooltipComponent } from 'echarts/com
 import { ECharts, EChartsCoreOption } from 'echarts/core';
 import { CanvasRenderer } from 'echarts/renderers';
 import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
-import { debounceTime, skipUntil, skipWhile, tap } from 'rxjs';
+import { debounceTime, filter, skipUntil, skipWhile, tap } from 'rxjs';
 
 echarts.use([CanvasRenderer, PieChart, LegendComponent, GraphicComponent]);
 
@@ -125,10 +125,11 @@ export class TripStatusChart {
     toObservable(this.data)
       .pipe(
         takeUntilDestroyed(),
-        skipWhile((data) => data.data.reduce((a, v) => a + v.value, 0) === 0),
-        debounceTime(100),
+        //debounceTime(100),
+        filter((data) => data.total !== 0),
       )
       .subscribe((data) => {
+        console.log('RICREO CHART', data);
         const options: EChartsCoreOption = {
           series: [
             {

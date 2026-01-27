@@ -3,6 +3,7 @@ import {
   ChangeDetectionStrategy,
   Component,
   computed,
+  effect,
   inject,
   input,
   PLATFORM_ID,
@@ -77,10 +78,12 @@ import { toObservable, toSignal } from '@angular/core/rxjs-interop';
           </div>
           <div class="flex justify-between">
             <div class="min-h-[52px]">
-              <h3 class="text-slate-600 uppercase">Treni in orario</h3>
-              <p class="text-3xl text-slate-800">
-                {{ ((onTimeTrips().length / trips().length) * 100).toFixed(0) }}%
-              </p>
+              @if (trips().length > 0) {
+                <h3 class="text-slate-600 uppercase">Treni in orario</h3>
+                <p class="text-3xl text-slate-800">
+                  {{ ((onTimeTrips().length / trips().length) * 100).toFixed(0) }}%
+                </p>
+              }
             </div>
             <div class="min-h-[52px]">
               @if (medianDelay() > 0) {
@@ -107,6 +110,7 @@ import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 })
 export class HomeStats {
   readonly trips = input<Trip[]>([]);
+  readonly isLoading = input<boolean>(false);
   readonly onTimeTrips = computed(() => this.trips().filter((t) => t.status === 'on-time'));
   readonly delayedTrips = computed(() => this.trips().filter((t) => t.status === 'delayed'));
   readonly realDelayedTrips = computed(() => this.trips().filter((t) => t.delay > 0));

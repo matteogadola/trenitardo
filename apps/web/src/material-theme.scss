@@ -84,6 +84,18 @@ $theme: mat.define-theme(
   }
 
   --mat-form-field-container-text-size: 1.3rem;
+
+  @include mat.button-overrides(
+    (
+      outlined-horizontal-padding: 64px,
+      outlined-container-height: 55px,
+      outlined-outline-color: var(--p-slate-500),
+      outlined-outline-width: 1px,
+      outlined-label-text-color: var(--p-slate-500),
+      outlined-label-text-size: 18px,
+      outlined-label-text-weight: 400,
+    )
+  );
 }
 
 app-trip-table {

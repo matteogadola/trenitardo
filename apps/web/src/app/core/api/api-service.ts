@@ -8,7 +8,7 @@ import {
   QueryConstraint,
   where,
 } from '@angular/fire/firestore';
-import { catchError, filter, map, Observable, of } from 'rxjs';
+import { catchError, exhaustMap, filter, map, Observable, of, tap } from 'rxjs';
 import { Line, Run, Trip } from '@repo/types';
 
 @Injectable({
@@ -48,15 +48,26 @@ export class ApiService {
     //return collectionData(productsCollection, { idField: 'id' }) as Observable<Product[]>;
   }
 
-  getTrips({ date }: { date?: string }): Observable<Trip[]> {
+  getTrips({ range }: { range: { startDate: string; endDate?: string } }): Observable<Trip[]> {
     const collectionRef = this.inferCollection<Trip>('trips');
 
+    let queryRef;
+    if (range.endDate) {
+      const constaints: QueryConstraint[] = [
+        where('date', '>=', range.startDate),
+        where('date', '<=', range.endDate),
+      ];
+      queryRef = query(collectionRef, ...constaints);
+    } else {
+      queryRef = query(collectionRef, where('date', '==', range.startDate));
+    }
     //const constaints: QueryConstraint[] = [
     //  where('date', '==', date),
     //  orderBy('departureTime', 'asc'),
     //];
     //const queryRef = query(collectionRef, ...constaints);
-    const queryRef = query(collectionRef, where('date', '==', date));
+    //const queryRef = query(collectionRef, where('date', '==', date));
+
     return collectionData(queryRef, { idField: 'id' }).pipe(
       map((trips) =>
         trips

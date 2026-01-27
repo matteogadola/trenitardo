@@ -26,7 +26,3 @@ export interface Run {
     includedDates: string[];
   };
 }
-
-export interface RunForSchedule extends Run {
-  date: string;
-}
