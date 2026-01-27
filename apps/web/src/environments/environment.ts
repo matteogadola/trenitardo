@@ -1,5 +1,5 @@
 export const environment = {
-  production: false,
-  deployStage: '', //env['deploy_stage'],
+  production: true,
+  deployStage: 'production',
   firebaseConfig: {},
 };
