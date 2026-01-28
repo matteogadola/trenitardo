@@ -87,7 +87,7 @@ $theme: mat.define-theme(
 
   @include mat.button-overrides(
     (
-      outlined-horizontal-padding: 64px,
+      outlined-horizontal-padding: 4rem,
       outlined-container-height: 55px,
       outlined-outline-color: var(--p-slate-500),
       outlined-outline-width: 1px,
@@ -126,4 +126,14 @@ app-trip-table {
       container-elevation-shadow: 0px 3px 0px -2px rgba(0, 0, 0, 0.2),
     )
   );
+}
+
+@include mat.button-toggle-overrides(
+  (
+    selected-state-background-color: var(--color-blue-200),
+  )
+);
+
+mat-button-toggle {
+  width: 100%;
 }

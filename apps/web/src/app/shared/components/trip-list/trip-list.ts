@@ -58,7 +58,7 @@ import { TripStatusPipe } from '../../pipes/trip-pipe';
                     [class.font-bold]="trip.isCompleted"
                     [class.italic]="!trip.isCompleted"
                   >
-                    {{ trip.actualArrivalTime }}
+                    {{ trip.actualArrivalTime ?? trip.arrivalTime }}
                   </span>
                   <span class="text-base text-gray-600 font-medium leading-tight text-right">
                     {{ trip.destination }}

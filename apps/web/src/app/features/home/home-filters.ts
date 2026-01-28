@@ -56,10 +56,10 @@ export interface FilterState {
             [formControl]="modeControl"
             class="min-w-xs sm:min-w-md mx-auto"
           >
-            <mat-button-toggle value="daily" class="w-1/3">Giorno</mat-button-toggle>
+            <mat-button-toggle value="daily">Giorno</mat-button-toggle>
             <!--mat-button-toggle value="weekly" class="w-1/4">Settimana</mat-button-toggle-->
-            <mat-button-toggle value="monthly" class="w-1/3">Mese</mat-button-toggle>
-            <mat-button-toggle value="range" class="w-1/3">Range</mat-button-toggle>
+            <mat-button-toggle value="monthly">Mese</mat-button-toggle>
+            <mat-button-toggle value="range">Range</mat-button-toggle>
           </mat-button-toggle-group>
           <div class="">
             <app-datepicker
