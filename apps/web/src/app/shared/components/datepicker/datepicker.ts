@@ -105,7 +105,6 @@ export type DatePickerOutput = {
             <input
               matStartDate
               formControlName="startDate"
-              (dateChange)="emitValue()"
               [min]="minDate"
               [max]="maxDate"
               [hidden]="true"
@@ -235,9 +234,6 @@ export class Datepicker {
     //this.filtersForm.date().value.update((d) => d.add(1, 'day'));
   }
 
-  /**
-   * Gestisce la logica Monthly (Pro Claude)
-   */
   handleMonthSelected(date: Dayjs, picker: MatDatepicker<Dayjs>) {
     if (this.mode() === 'monthly') {
       let startDate = date.startOf('month');
@@ -253,7 +249,7 @@ export class Datepicker {
       }
 
       this.rangeGroup.patchValue({ startDate, endDate });
-      this.singleDateControl.setValue(startDate); // Per la label del bottone
+      this.singleDateControl.setValue(startDate);
       picker.close();
       this.emitValue();
     }
@@ -277,6 +273,7 @@ export class Datepicker {
 
   emitValue() {
     const mode = this.mode();
+
     const value =
       mode === 'daily'
         ? { startDate: this.singleDateControl.value!.format('YYYY-MM-DD') }
