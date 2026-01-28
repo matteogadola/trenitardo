@@ -31,7 +31,12 @@ import { Component } from '@angular/core';
         </svg>
       </a>
       <!-- Instagram -->
-      <a href="https://www.instagram.com/matteogadola/" target="_blank" aria-label="Instagram">
+      <a
+        href="https://www.instagram.com/matteogadola/"
+        target="_blank"
+        aria-label="Instagram"
+        class="hidden"
+      >
         <svg
           xmlns="http://www.w3.org/2000/svg"
           viewBox="0 0 24 24"
