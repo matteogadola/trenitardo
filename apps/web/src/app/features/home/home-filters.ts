@@ -46,7 +46,7 @@ export interface FilterState {
         class()
       "
     >
-      <div class="w-xl mx-auto">
+      <div class="max-w-xl mx-auto">
         <div class="flex flex-col gap-8">
           <!--form (submit)="$event.preventDefault()" class="flex flex-col gap-8"-->
           <mat-button-toggle-group
@@ -54,7 +54,7 @@ export interface FilterState {
             aria-label="Font Style"
             [hideSingleSelectionIndicator]="true"
             [formControl]="modeControl"
-            class="w-sm mx-auto"
+            class="min-w-xs sm:min-w-md mx-auto"
           >
             <mat-button-toggle value="daily" class="w-1/3">Giorno</mat-button-toggle>
             <!--mat-button-toggle value="weekly" class="w-1/4">Settimana</mat-button-toggle-->
