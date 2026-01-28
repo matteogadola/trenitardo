@@ -4,52 +4,38 @@ import {
   isMainModule,
   writeResponseToNodeResponse,
 } from '@angular/ssr/node';
-import express from 'express';
 import Fastify from 'fastify';
+import fastifyStatic from '@fastify/static';
 import { join } from 'node:path';
 
 const browserDistFolder = join(import.meta.dirname, '../browser');
 
-const app = express();
+// const app = express();
 // https://fastify.dev/docs/latest/Guides/Getting-Started/
-// const app = Fastify({
-//   logger: true
-// });
+const app = Fastify({
+  logger: true,
+});
 const angularApp = new AngularNodeAppEngine();
-
-/**
- * Example Express Rest API endpoints can be defined here.
- * Uncomment and define endpoints as necessary.
- *
- * Example:
- * ```ts
- * app.get('/api/{*splat}', (req, res) => {
- *   // Handle API request
- * });
- * ```
- */
 
 /**
  * Serve static files from /browser
  */
-app.use(
-  express.static(browserDistFolder, {
-    maxAge: '1y',
-    index: false,
-    redirect: false,
-  }),
-);
+app.register(fastifyStatic, {
+  root: browserDistFolder,
+  wildcard: false,
+  index: false,
+});
 
 /**
  * Handle all other requests by rendering the Angular application.
  */
-app.use((req, res, next) => {
+app.get('*', (req, reply) => {
   angularApp
-    .handle(req)
+    .handle(req.raw)
     .then((response) =>
-      response ? writeResponseToNodeResponse(response, res) : next(),
+      response ? writeResponseToNodeResponse(response, reply.raw) : reply.callNotFound(),
     )
-    .catch(next);
+    .catch((err) => reply.send(err));
 });
 
 /**
@@ -57,23 +43,21 @@ app.use((req, res, next) => {
  * The server listens on the port defined by the `PORT` environment variable, or defaults to 4000.
  */
 if (isMainModule(import.meta.url) || process.env['pm_id']) {
-  const port = process.env['PORT'] || 4000;
-  app.listen(port, (error) => {
-    if (error) {
-      throw error;
+  const port = Number(process.env['PORT']) || 4000;
+  app.listen({ port, host: '0.0.0.0' }, (err, address) => {
+    if (err) {
+      app.log.error(err);
+      process.exit(1);
     }
 
-    console.log(`Node Express server listening on http://localhost:${port}`);
+    console.log(`Node Fastify server listening on ${address}`);
   });
 }
 
 /**
  * Request handler used by the Angular CLI (for dev-server and during build) or Firebase Cloud Functions.
  */
-export const reqHandler = createNodeRequestHandler(app);
-
-// https://github.com/exequiel09/fastify-angular-universal
-//export default createNodeRequestHandler(async (req, res) => {
-//  await app.ready();
-//  app.server.emit('request', req, res);
-//});
+export const reqHandler = createNodeRequestHandler(async (req, res) => {
+  await app.ready();
+  app.server.emit('request', req, res);
+});
