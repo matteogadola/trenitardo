@@ -12,7 +12,7 @@ import {
 import { Trip } from '@repo/types';
 import { AnimatedCard } from '@app/shared/components/card/animated-card';
 import { MathCeilPipe } from '../../shared/pipes/math-pipe';
-import { AnimateDirective } from '@app/shared/directives/animate';
+import { AnimateDirective } from '@app/shared/animations/animate-directive';
 import { TripStatusChart } from '@app/shared/components/charts/trip-status';
 import { debounceTime } from 'rxjs';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
@@ -23,8 +23,8 @@ import { toObservable, toSignal } from '@angular/core/rxjs-interop';
   imports: [AnimatedCard, MathCeilPipe, AnimateDirective, TripStatusChart],
   template: `
     <div class="stats-grid">
-      <app-animated-card>
-        <div class="flex justify-between" animate>
+      <app-animated-card animate [animateRepeat]="false">
+        <div class="flex justify-between">
           <div class="flex flex-col gap-4">
             @if (delayedTrips().length > 0) {
               <div>
@@ -60,7 +60,13 @@ import { toObservable, toSignal } from '@angular/core/rxjs-interop';
           /-->
         </div>
       </app-animated-card>
-      <app-animated-card [delay2]="2" animate animationType="slide-left" animateDelay="400ms">
+      <app-animated-card
+        [delay2]="2"
+        animate
+        animationType="slide-left"
+        animateDelay="400ms"
+        [animateRepeat]="false"
+      >
         <div class="flex flex-col gap-4">
           <div class="flex justify-between">
             <div class="min-h-[52px]">

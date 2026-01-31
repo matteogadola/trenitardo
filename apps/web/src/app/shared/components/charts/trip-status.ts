@@ -40,47 +40,8 @@ export class TripStatusChart {
     legend: {
       show: false,
     },
-    series: [
-      {
-        itemStyle: {
-          borderRadius: 10,
-          borderColor: '#fff',
-          borderWidth: 2,
-        },
-        label: {
-          show: false,
-          position: 'center',
-        },
-        emphasis: {
-          label: { show: false },
-        },
-        labelLine: {
-          show: false,
-        },
-        data: [],
-        //  { value: 12, name: 'In orario' },
-        //  { value: 13, name: 'In ritardo' },
-        //  { value: 1, name: 'Soppressi' },
-        //  { value: 4, name: 'Deviati' },
-        //],
-      },
-    ],
-    graphic: [
-      {
-        type: 'text',
-        silent: true,
-        left: 'center',
-        top: 'center',
-        style: {
-          text: '',
-          textAlign: 'center',
-          textVerticalAlign: 'middle',
-          fill: '#333', // Colore del testo
-          fontSize: 20,
-          fontWeight: 'bold',
-        },
-      },
-    ],
+    series: [],
+    graphic: [],
   };
 
   mergeOption: EChartsCoreOption = this.options;

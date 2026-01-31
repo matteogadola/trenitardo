@@ -28,7 +28,7 @@ export type AnimationType =
 })
 export class AnimateDirective implements OnDestroy {
   animationType = input<AnimationType>('fade-in');
-  animateDelay = input<string>('50ms');
+  animateDelay = input<string>('10ms');
   animateDuration = input<string>('0.8s');
   animateThreshold = input<number>(0.5);
   animateRepeat = input<boolean>(true);

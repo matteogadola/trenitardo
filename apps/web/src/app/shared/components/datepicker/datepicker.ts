@@ -185,12 +185,12 @@ export class Datepicker {
 
     const { startDate, endDate } = this.rangeGroup.value;
     if (startDate && endDate) {
-      //if (mode === 'monthly') {
-      //  return startDate.format('MMMM YYYY');
-      //}
+      if (mode === 'monthly') {
+        const formatted = startDate.format('MMMM YYYY');
+        return formatted.charAt(0).toUpperCase() + formatted.slice(1);
+      }
       return `${startDate.format(fmt)} - ${endDate.format(fmt)}`;
     }
-
     return 'Seleziona Range';
   }
 

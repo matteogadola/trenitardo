@@ -1,13 +1,14 @@
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 import { Trip } from '@repo/types';
 import { TripList } from '@app/shared/components/trip-list/trip-list';
+import { AnimateDirective } from '@app/shared/animations/animate-directive';
 
 @Component({
   selector: 'home-trip-list',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [TripList],
+  imports: [TripList, AnimateDirective],
   template: `
-    <div [class]="class()">
+    <div [class]="class()" animate [animateThreshold]="0.1">
       <h1
         class="text-4xl my-18 lg:mt-32 lg:mb-24 md:text-6xl font-bold text-slate-800 text-center tracking-tight"
       >

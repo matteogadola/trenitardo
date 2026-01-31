@@ -7,8 +7,9 @@ import {
   untracked,
   linkedSignal,
 } from '@angular/core';
-import { HomeFilters } from './home-filters';
+import { HomeFilters, Range } from './home-filters';
 import { HomeStats } from './home-stats';
+import { HomeStatsMulti } from './home-stats-multi';
 import { HomeTripList } from './home-trip-list';
 import { ApiService } from '@app/core/api/api-service';
 import { rxResource } from '@angular/core/rxjs-interop';
@@ -22,7 +23,7 @@ import { Trip } from '@repo/types';
 @Component({
   selector: 'app-home-page',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [HomeFilters, HomeStats, HomeTripList, HomeHero, Spinner, HomeFaq],
+  imports: [HomeFilters, HomeStats, HomeTripList, HomeHero, Spinner, HomeFaq, HomeStatsMulti],
   template: `
     <div class="w-content pt-[80px]">
       <home-hero />
@@ -30,7 +31,13 @@ import { Trip } from '@repo/types';
       @defer (when tripsResource.hasValue()) {
         <div class="flex flex-col gap-8">
           <home-stats [trips]="tripsResource.value()" [isLoading]="tripsResource.isLoading()" />
-          <home-filters [isLoading]="tripsResource.isLoading()" (change)="onFilterChange($event)" />
+          <home-filters [isLoading]="tripsResource.isLoading()" (rangeChange)="range.set($event)" />
+          @if (range().startDate && range().endDate) {
+            <home-stats-multi
+              [trips]="tripsResource.value()"
+              [isLoading]="tripsResource.isLoading()"
+            />
+          }
           <home-trip-list [trips]="tripsResource.value()" />
         </div>
       } @placeholder {
@@ -46,7 +53,7 @@ import { Trip } from '@repo/types';
 })
 export class HomePage {
   private readonly apiService = inject(ApiService);
-  private readonly range = signal<{ startDate: string; endDate?: string }>({ startDate: TODAY });
+  readonly range = signal<Range>({ startDate: TODAY });
   readonly lines$ = this.apiService.getLines();
 
   readonly tripsResource = rxResource({
@@ -54,8 +61,4 @@ export class HomePage {
     stream: ({ params: range }) => this.apiService.getTrips({ range }),
     defaultValue: [],
   });
-
-  onFilterChange(filter: any) {
-    this.range.set(filter);
-  }
 }

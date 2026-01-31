@@ -1,24 +1,27 @@
 import { Component, ChangeDetectionStrategy } from '@angular/core';
+import { AnimateDirective } from '@app/shared/animations/animate-directive';
 
 @Component({
   selector: 'home-hero',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [],
+  imports: [AnimateDirective],
   template: `
     <div class="pt-24 lg:pt-32 pb-12 lg:pb-20">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
         <!-- Header -->
         <div class="text-center mb-16">
-          <h1 class="text-5xl md:text-7xl font-bold text-slate-800 mb-6 tracking-tight">
+          <h1 class="text-5xl md:text-7xl font-bold text-slate-800 mb-6 tracking-tight" animate>
             Statistiche di puntualità
             <span
               class="block text-transparent bg-clip-text bg-linear-to-r from-green-500 to-blue-500"
+              animate
+              animateDelay="100ms"
             >
               in Valtellina
             </span>
           </h1>
 
-          <p class="text-xl text-slate-600 max-w-2xl mx-auto">
+          <p class="text-xl text-slate-600 max-w-2xl mx-auto" animate animateDelay="200ms">
             Trasformiamo dati effimeri in statistiche accessibili.
             <span class="block">
               Una sguardo immediato sulla viabilità ferroviaria valtellinese.
