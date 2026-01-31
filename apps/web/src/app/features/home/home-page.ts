@@ -1,12 +1,4 @@
-import {
-  Component,
-  ChangeDetectionStrategy,
-  inject,
-  signal,
-  effect,
-  untracked,
-  linkedSignal,
-} from '@angular/core';
+import { Component, ChangeDetectionStrategy, inject, signal } from '@angular/core';
 import { HomeFilters, Range } from './home-filters';
 import { HomeStats } from './home-stats';
 import { HomeStatsMulti } from './home-stats-multi';
@@ -17,15 +9,13 @@ import { HomeHero } from './home-hero';
 import { TODAY } from '@app/core/utils/date-util';
 import { Spinner } from '@app/shared/components/spinner/spinner';
 import { HomeFaq } from './home-faq';
-import { debounceTime, distinctUntilChanged, filter, Observable, skipWhile, startWith } from 'rxjs';
-import { Trip } from '@repo/types';
 
 @Component({
   selector: 'app-home-page',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [HomeFilters, HomeStats, HomeTripList, HomeHero, Spinner, HomeFaq, HomeStatsMulti],
   template: `
-    <div class="w-content pt-[80px]">
+    <main role="main" class="w-content pt-[80px]">
       <home-hero />
 
       @defer (when tripsResource.hasValue()) {
@@ -48,7 +38,7 @@ import { Trip } from '@repo/types';
       <section class="hidden pt-24">
         <home-faq />
       </section>
-    </div>
+    </main>
   `,
 })
 export class HomePage {

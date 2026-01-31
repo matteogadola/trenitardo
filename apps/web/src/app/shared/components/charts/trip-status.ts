@@ -90,7 +90,6 @@ export class TripStatusChart {
         filter((data) => data.total !== 0),
       )
       .subscribe((data) => {
-        console.log('RICREO CHART', data);
         const options: EChartsCoreOption = {
           series: [
             {

@@ -24,6 +24,7 @@ import { toObservable, toSignal } from '@angular/core/rxjs-interop';
   template: `
     <div class="stats-grid">
       <app-animated-card animate [animateRepeat]="false">
+        <h2 class="sr-only">Statistiche Generali</h2>
         <div class="flex justify-between">
           <div class="flex flex-col gap-4">
             @if (delayedTrips().length > 0) {
@@ -49,15 +50,7 @@ import { toObservable, toSignal } from '@angular/core/rxjs-interop';
           </div>
           <div class="w-1/2 h-full" [class.w-full]="trips().length === onTimeTrips().length">
             <trip-status-chart [data]="statusChartData()" style="height: 200px;" />
-            <!--div echarts [options]="chartOption" style="height: 200px;"></div-->
           </div>
-          <!--p-chart
-            type="pie"
-            [data]="statusData()"
-            [options]="options()"
-            [plugins]="chartPlugins"
-            class="w-50 h-50"
-          /-->
         </div>
       </app-animated-card>
       <app-animated-card
@@ -145,84 +138,4 @@ export class HomeStats {
       ],
     };
   });
-
-  data = [];
-  statusData = computed(() => {
-    return {
-      labels: ['In orario', 'In ritardo', 'Soppressi'],
-      datasets: [
-        {
-          data: [
-            this.onTimeTrips().length,
-            this.delayedTrips().length,
-            this.cancelledTrips().length,
-            this.modifiedTrips().length,
-          ],
-          backgroundColor: ['#6BCF8B', '#FF6B7A', '#353831', '#FFAB6B'],
-          hoverOffset: 4,
-          responsive: true,
-        },
-      ],
-    };
-  });
-
-  options = computed(() => {
-    return {
-      cutout: '60%',
-      borderWidth: 1,
-      plugins: {
-        legend: {
-          display: false,
-        },
-        nTrips: { value: this.trips().length.toString() },
-      },
-    };
-  });
-
-  chartPlugins = [
-    {
-      id: 'centerText',
-      afterDraw: (chart: any) => {
-        const {
-          ctx,
-          chartArea: { left, top, width, height },
-        } = chart;
-        ctx.save();
-
-        const centerX = left + width / 2;
-        const centerY = top + height / 2;
-
-        const text = chart.config.options.plugins.nTrips.value;
-        const line1 = {
-          text: text,
-          fontSize: (height / 50).toFixed(2),
-          color: '#000000',
-          fontWeight: '600',
-        };
-
-        const line2 = {
-          text: 'TRENI',
-          fontSize: (height / 150).toFixed(2),
-          color: '#000000',
-          fontWeight: '',
-        };
-
-        // --- DISEGNO PRIMA RIGA (Superiore) ---
-        ctx.font = `${line1.fontWeight} ${line1.fontSize}em sans-serif`;
-        ctx.fillStyle = line1.color;
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'bottom'; // Si appoggia sulla linea centrale
-        ctx.fillText(line1.text, centerX, centerY + 12);
-
-        // --- DISEGNO SECONDA RIGA (Inferiore) ---
-        ctx.font = `${line2.fontWeight} ${line2.fontSize}em sans-serif`;
-        ctx.fillStyle = line2.color;
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'top'; // Parte dalla linea centrale verso il basso
-        ctx.fillText(line2.text, centerX, centerY + 12);
-
-        ctx.restore();
-      },
-    },
-  ];
 }
