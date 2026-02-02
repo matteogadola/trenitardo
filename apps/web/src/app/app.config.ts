@@ -4,7 +4,11 @@ import { provideRouter } from '@angular/router';
 import { provideFirebaseApp, initializeApp } from '@angular/fire/app';
 import { provideAuth, getAuth } from '@angular/fire/auth';
 import { provideFirestore, getFirestore } from '@angular/fire/firestore';
-import { provideRemoteConfig, getRemoteConfig } from '@angular/fire/remote-config';
+import {
+  provideRemoteConfig,
+  getRemoteConfig,
+  fetchAndActivate,
+} from '@angular/fire/remote-config';
 import { provideAnalytics, getAnalytics } from '@angular/fire/analytics';
 import { routes } from './app.routes';
 import { provideFirebaseConfig, FIREBASE_CONFIG_TOKEN } from './core/config/firebase-config';
@@ -14,7 +18,7 @@ import { provideHttpClient, withFetch } from '@angular/common/http';
 
 export const appConfig: ApplicationConfig = {
   providers: [
-    { provide: MAT_DATE_LOCALE, useFactory: () => navigator.language }, //useValue: 'it-IT' },
+    { provide: MAT_DATE_LOCALE, useFactory: () => navigator.language },
     { provide: DateAdapter, useClass: DayjsDateAdapter, deps: [MAT_DATE_LOCALE] },
     { provide: MAT_DATE_FORMATS, useValue: MAT_DAYJS_FORMATS },
     provideBrowserGlobalErrorListeners(),

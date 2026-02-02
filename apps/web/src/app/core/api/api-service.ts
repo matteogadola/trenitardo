@@ -8,7 +8,7 @@ import {
   QueryConstraint,
   where,
 } from '@angular/fire/firestore';
-import { catchError, exhaustMap, filter, map, Observable, of, tap } from 'rxjs';
+import { map, Observable, shareReplay } from 'rxjs';
 import { Line, Run, Trip } from '@repo/types';
 
 @Injectable({
@@ -16,36 +16,14 @@ import { Line, Run, Trip } from '@repo/types';
 })
 export class ApiService {
   private readonly _firestore = inject(Firestore);
+  private readonly _lines$ = this.fetchLines().pipe(shareReplay(1));
+  private readonly _runs$ = this.fetchRuns().pipe(shareReplay(1));
 
   getLines(): Observable<Line[]> {
-    const collectionRef = this.inferCollection<Line>('lines');
-    const constaintRef: QueryConstraint[] = [
-      where('status', '==', 'active'),
-      //orderBy('code', 'asc'),
-    ];
-    const queryRef = query(collectionRef, ...constaintRef);
-    return collectionData(queryRef) as Observable<Line[]>;
-    /*return collectionData(queryRef).pipe(
-      catchError(() => of([])),
-      map((items) => items as Line[]),
-    );*/
+    return this._lines$;
   }
-
   getRuns(): Observable<Run[]> {
-    const collectionRef = this.inferCollection<Run>('runs');
-
-    //const constaints: QueryConstraint[] = [
-    //  where('date', '>', date),
-    //  where('date', '==', '2026-01-16'),
-    //orderBy('scheduledDepartureTime asc')
-    //];
-    //const queryRef = query(collectionRef, ...constaints)
-    const queryRef = query(collectionRef, orderBy('departureTime', 'asc'));
-    return collectionData(queryRef) as Observable<Run[]>;
-    //return collectionData(q) as Observable<any[]>;
-
-    // 'idField' popola automaticamente la proprietà 'id' con l'ID del documento Firestore
-    //return collectionData(productsCollection, { idField: 'id' }) as Observable<Product[]>;
+    return this._runs$;
   }
 
   getTrips({ range }: { range: { startDate: string; endDate?: string } }): Observable<Trip[]> {
@@ -61,12 +39,6 @@ export class ApiService {
     } else {
       queryRef = query(collectionRef, where('date', '==', range.startDate));
     }
-    //const constaints: QueryConstraint[] = [
-    //  where('date', '==', date),
-    //  orderBy('departureTime', 'asc'),
-    //];
-    //const queryRef = query(collectionRef, ...constaints);
-    //const queryRef = query(collectionRef, where('date', '==', date));
 
     return collectionData(queryRef, { idField: 'id' }).pipe(
       map((trips) =>
@@ -77,10 +49,23 @@ export class ApiService {
     );
   }
 
-  inferCollection<T extends object>(path: string) {
+  private inferCollection<T extends object>(path: string) {
     return collection(this._firestore, path).withConverter({
       toFirestore: (data: T) => data,
       fromFirestore: (snap) => ({ id: snap.id, ...snap.data() }) as T,
     });
+  }
+
+  // 3. Metodi privati che creano la query
+  private fetchLines(): Observable<Line[]> {
+    const collectionRef = this.inferCollection<Line>('lines');
+    const queryRef = query(collectionRef, where('status', '==', 'active'));
+    return collectionData(queryRef) as Observable<Line[]>;
+  }
+
+  private fetchRuns(): Observable<Run[]> {
+    const collectionRef = this.inferCollection<Run>('runs');
+    const queryRef = query(collectionRef, orderBy('departureTime', 'asc'));
+    return collectionData(queryRef, { idField: 'id' }) as Observable<Run[]>;
   }
 }

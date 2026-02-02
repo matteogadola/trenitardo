@@ -98,11 +98,12 @@ import { toObservable, toSignal } from '@angular/core/rxjs-interop';
   styles: `
     .stats-grid {
       display: grid;
-      gap: 2rem;
+      gap: 1rem;
       grid-template-columns: repeat(1, minmax(0, 1fr));
 
       @media (width >= 64rem) {
         grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 2rem;
       }
     }
   `,
@@ -133,7 +134,11 @@ export class HomeStats {
       data: [
         { value: this.onTimeTrips().length, name: 'In orario', itemStyle: { color: '#6BCF8B' } },
         { value: this.delayedTrips().length, name: 'In ritardo', itemStyle: { color: '#FF6B7A' } },
-        { value: this.cancelledTrips().length, name: 'Soppressi', itemStyle: { color: '#353831' } },
+        {
+          value: this.cancelledTrips().length,
+          name: 'Cancellati',
+          itemStyle: { color: '#353831' },
+        },
         { value: this.modifiedTrips().length, name: 'Deviati', itemStyle: { color: '#FFAB6B' } },
       ],
     };

@@ -4,11 +4,12 @@ import { HomeStats } from './home-stats';
 import { HomeStatsMulti } from './home-stats-multi';
 import { HomeTripList } from './home-trip-list';
 import { ApiService } from '@app/core/api/api-service';
-import { rxResource } from '@angular/core/rxjs-interop';
+import { rxResource, toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { HomeHero } from './home-hero';
 import { TODAY } from '@app/core/utils/date-util';
 import { Spinner } from '@app/shared/components/spinner/spinner';
 import { HomeFaq } from './home-faq';
+import { filter, map, startWith } from 'rxjs';
 
 @Component({
   selector: 'app-home-page',
@@ -19,16 +20,13 @@ import { HomeFaq } from './home-faq';
       <home-hero />
 
       @defer (when tripsResource.hasValue()) {
-        <div class="flex flex-col gap-8">
-          <home-stats [trips]="tripsResource.value()" [isLoading]="tripsResource.isLoading()" />
+        <div class="flex flex-col gap-4 lg:gap-8">
+          <home-stats [trips]="trips()" [isLoading]="tripsResource.isLoading()" />
           <home-filters [isLoading]="tripsResource.isLoading()" (rangeChange)="range.set($event)" />
           @if (range().startDate && range().endDate) {
-            <home-stats-multi
-              [trips]="tripsResource.value()"
-              [isLoading]="tripsResource.isLoading()"
-            />
+            <home-stats-multi [trips]="trips()" [isLoading]="tripsResource.isLoading()" />
           }
-          <home-trip-list [trips]="tripsResource.value()" />
+          <home-trip-list [trips]="trips()" />
         </div>
       } @placeholder {
         <div class="flex items-center justify-center">
@@ -51,4 +49,14 @@ export class HomePage {
     stream: ({ params: range }) => this.apiService.getTrips({ range }),
     defaultValue: [],
   });
+
+  // Evito che rxResource emetta [] ad ogni ricaricamento
+  trips = toSignal(
+    toObservable(this.tripsResource.isLoading).pipe(
+      startWith(true),
+      filter((isLoading) => !isLoading),
+      map(() => this.tripsResource.value()),
+    ),
+    { initialValue: [] },
+  );
 }

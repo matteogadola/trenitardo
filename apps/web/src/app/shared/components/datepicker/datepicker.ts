@@ -24,10 +24,6 @@ import type { Dayjs } from 'dayjs';
 
 export type DatePickerMode = 'daily' | 'weekly' | 'monthly' | 'range';
 
-//export type DatePickerOutput<M extends DatePickerMode> = M extends 'daily'
-//  ? { date: string }
-//  : { startDate: string; endDate: string };
-
 export type DatePickerOutput = {
   startDate: string;
   endDate?: string;
@@ -58,6 +54,7 @@ export type DatePickerOutput = {
             (mode() === 'daily' && singleDateControl.value.isSame(minDate)) ||
             (mode() !== 'daily' && rangeGroup.value.startDate?.isSame(minDate))
           "
+          [hidden]="mode() === 'range'"
         >
           <mat-icon>chevron_left</mat-icon>
         </button>
@@ -76,6 +73,7 @@ export type DatePickerOutput = {
             (mode() === 'daily' && singleDateControl.value.isToday()) ||
             (mode() !== 'daily' && rangeGroup.value.endDate?.isToday())
           "
+          [hidden]="mode() === 'range'"
         >
           <mat-icon>chevron_right</mat-icon>
         </button>
@@ -141,7 +139,6 @@ export type DatePickerOutput = {
     }
 
     .hidden-inputs {
-      /* Evita l'errore NG01352 mantenendo gli input "attivi" ma invisibili */
       visibility: hidden;
       height: 0;
       width: 0;
@@ -221,8 +218,6 @@ export class Datepicker {
       });
     }
     this.emitValue();
-    //this.singleDateControl.setValue(today);
-    //this.filtersForm.date().value.update((d) => d.subtract(1, 'day'));
   }
 
   next(): void {
@@ -230,8 +225,6 @@ export class Datepicker {
       this.singleDateControl.setValue(this.singleDateControl.value?.add(1, 'day'));
     }
     this.emitValue();
-    //this.singleDateControl.setValue(today);
-    //this.filtersForm.date().value.update((d) => d.add(1, 'day'));
   }
 
   handleMonthSelected(date: Dayjs, picker: MatDatepicker<Dayjs>) {
@@ -260,9 +253,9 @@ export class Datepicker {
 
     if (mode === 'daily') {
       this.singleDateControl.setValue(today);
-    } else if (mode === 'weekly') {
+    } else if (mode === 'weekly' || mode === 'range') {
       this.rangeGroup.setValue({
-        startDate: today.startOf('week'),
+        startDate: today.subtract(1, 'week'),
         endDate: today,
       });
     } else if (mode === 'monthly') {

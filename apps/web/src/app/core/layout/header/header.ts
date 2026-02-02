@@ -53,12 +53,10 @@ import { Logo } from '../logo';
       padding: 1rem 2rem;
       width: 100%;
 
-      /* Valori di default (per quando siamo sul server o inizio pagina) */
       background-color: rgba(255, 255, 255, var(--header-opacity, 0));
       backdrop-filter: blur(var(--header-blur, 0px));
       -webkit-backdrop-filter: blur(var(--header-blur, 0px));
       border-bottom: 1px solid rgba(0, 0, 0, calc(var(--header-opacity, 0) * 0.1));
-
       transition: all 0.1s linear;
     }
 
@@ -87,9 +85,9 @@ export class Header {
   private scrollDispatcher = inject(ScrollDispatcher);
   private destroyRef = inject(DestroyRef);
 
-  private readonly MAX_SCROLL_PX = 50; // Dopo 300px l'effetto è al massimo
-  private readonly MAX_BLUR_PX = 12; // Blur massimo richiesto
-  private readonly MAX_OPACITY = 0.7; // Opacità massima sfondo (0.7 = 70%)
+  private readonly MAX_SCROLL_PX = 50;
+  private readonly MAX_BLUR_PX = 12;
+  private readonly MAX_OPACITY = 0.7;
   private readonly MAX_SCALE = 1;
 
   currentBlur = signal<number>(0);
@@ -107,7 +105,6 @@ export class Header {
           this.calculateStyles();
         });
 
-      // Lanciamo un calcolo iniziale nel caso l'utente aggiorni la pagina già scrollata
       this.calculateStyles();
     });
   }
@@ -120,13 +117,10 @@ export class Header {
     let progress = Math.min(scrollTop / this.MAX_SCROLL_PX, 1);
     progress = Math.max(progress, 0);
 
-    // Calcoliamo i valori precisi
     const blur = progress * this.MAX_BLUR_PX;
     const opacity = progress * this.MAX_OPACITY;
     const scale = progress * this.MAX_SCALE;
 
-    // Aggiorniamo i signal solo se i valori sono cambiati significativamente
-    // (toFixed aiuta a evitare aggiornamenti per micro-variazioni decimali)
     if (this.currentBlur().toFixed(1) !== blur.toFixed(1)) {
       this.currentBlur.set(blur);
       this.currentOpacity.set(opacity);

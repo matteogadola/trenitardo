@@ -10,18 +10,22 @@ import { AnimateDirective } from '@app/shared/animations/animate-directive';
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
         <!-- Header -->
         <div class="text-center mb-16">
-          <h1 class="text-5xl md:text-7xl font-bold text-slate-800 mb-6 tracking-tight" animate>
+          <h1
+            class="text-5xl md:text-7xl font-bold text-slate-800 mb-6 tracking-tight"
+            animate
+            animateDelay="100ms"
+          >
             Statistiche di puntualità
             <span
               class="block text-transparent bg-clip-text bg-linear-to-r from-green-500 to-blue-500"
               animate
-              animateDelay="100ms"
+              animateDelay="200ms"
             >
               in Valtellina
             </span>
           </h1>
 
-          <p class="text-xl text-slate-600 max-w-2xl mx-auto" animate animateDelay="200ms">
+          <p class="text-xl text-slate-600 max-w-2xl mx-auto" animate animateDelay="300ms">
             Trasformiamo dati effimeri in statistiche accessibili.
             <span class="block">
               Una sguardo immediato sulla viabilità ferroviaria valtellinese.

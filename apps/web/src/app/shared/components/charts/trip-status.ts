@@ -100,23 +100,6 @@ export class TripStatusChart {
               emphasis: {
                 label: { show: false },
               },
-              /*itemStyle: {
-                borderRadius: 10,
-                borderColor: '#fff',
-                borderWidth: 2,
-              },
-              label: {
-                show: false,
-                position: 'center',
-              },
-              emphasis: {
-                label: {
-                  show: true,
-                  fontSize: 16,
-                  fontWeight: 'bold',
-                  formatter: '{c}\n{b}',
-                },
-              },*/
               label: {
                 show: false,
                 position: 'center',
@@ -149,48 +132,5 @@ export class TripStatusChart {
           replaceMerge: ['series', 'graphic'],
         });
       });
-
-    /*effect(() => {
-      const data = this.data();
-
-      console.log(data);
-
-      const options: EChartsCoreOption = {
-        series: [
-          {
-            name: 'Access From',
-            type: 'pie',
-            radius: ['55%', '95%'],
-            avoidLabelOverlap: false,
-            itemStyle: {
-              borderRadius: 10,
-              borderColor: '#fff',
-              borderWidth: 2,
-            },
-            label: {
-              show: false,
-              position: 'center',
-            },
-            emphasis: {
-              label: {
-                show: true,
-                fontSize: 20,
-                //fontWeight: 'bold',
-                formatter: '{c}\n{b}',
-              },
-            },
-            labelLine: {
-              show: false,
-            },
-            data,
-          },
-        ],
-      };
-
-      this.mergeOption = { ...options };
-      this.echartsInstance()?.setOption(options, {
-        replaceMerge: ['series'],
-      });
-    });*/
   }
 }

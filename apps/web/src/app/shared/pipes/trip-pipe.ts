@@ -12,7 +12,7 @@ export class TripStatusPipe implements PipeTransform {
       case 'delayed':
         return 'In ritardo';
       case 'cancelled':
-        return 'Soppresso';
+        return 'Cancellato';
       case 'partially-cancelled':
         return 'Deviato';
       default:

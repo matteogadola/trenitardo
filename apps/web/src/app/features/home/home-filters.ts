@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, input, output, signal } from '@angular/core';
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDatepickerModule } from '@angular/material/datepicker';
@@ -13,13 +13,10 @@ import {
 } from '@app/shared/components/datepicker/datepicker';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { AnimateDirective } from '@app/shared/animations/animate-directive';
+import { RemoteConfig, getValue, fetchAndActivate } from '@angular/fire/remote-config';
 
 interface FilterData {
   mode: DatePickerMode;
-  //date: Dayjs;
-  //startDate: Dayjs;
-  //endDate: Dayjs;
-  //lineId: string;
 }
 export interface Range {
   startDate: string;
@@ -48,19 +45,21 @@ export interface Range {
     >
       <div class="max-w-xl mx-auto">
         <div class="flex flex-col gap-8">
-          <!--form (submit)="$event.preventDefault()" class="flex flex-col gap-8"-->
-          <mat-button-toggle-group
-            name="mode"
-            aria-label="Font Style"
-            [hideSingleSelectionIndicator]="true"
-            [formControl]="modeControl"
-            class="min-w-xs sm:min-w-md mx-auto"
-          >
-            <mat-button-toggle value="daily">Giorno</mat-button-toggle>
-            <!--mat-button-toggle value="weekly" class="w-1/4">Settimana</mat-button-toggle-->
-            <mat-button-toggle value="monthly">Mese</mat-button-toggle>
-            <mat-button-toggle value="range">Range</mat-button-toggle>
-          </mat-button-toggle-group>
+          <!-- TODO: solo se filterModeEnabled o user loggato -->
+          @if (filterModeEnabled() === true) {
+            <mat-button-toggle-group
+              name="mode"
+              aria-label="Font Style"
+              [hideSingleSelectionIndicator]="true"
+              [formControl]="modeControl"
+              class="min-w-xs sm:min-w-md mx-auto"
+            >
+              <mat-button-toggle value="daily">Giorno</mat-button-toggle>
+              <!--mat-button-toggle value="weekly" class="w-1/4">Settimana</mat-button-toggle-->
+              <mat-button-toggle value="monthly">Mese</mat-button-toggle>
+              <mat-button-toggle value="range">Range</mat-button-toggle>
+            </mat-button-toggle-group>
+          }
           <div class="">
             <app-datepicker
               [mode]="mode()"
@@ -69,19 +68,26 @@ export interface Range {
             />
           </div>
         </div>
-        <!--/form-->
       </div>
     </div>
   `,
-  styles: ``,
 })
 export class HomeFilters {
+  private readonly remoteConfig = inject(RemoteConfig);
+  readonly filterModeEnabled = signal(false);
   isLoading = input<boolean>(false);
   rangeChange = output<Range>();
 
   // in attesa che mat-button-toggle-group inizi a supportare [formField]
   modeControl = new FormControl<DatePickerMode>('daily', { nonNullable: true });
   mode = toSignal(this.modeControl.valueChanges, { initialValue: 'daily' });
+
+  constructor() {
+    fetchAndActivate(this.remoteConfig).then(() => {
+      const value = getValue(this.remoteConfig, 'filterModeEnabled').asBoolean();
+      this.filterModeEnabled.set(value);
+    });
+  }
 
   onDateChange(event: DatePickerOutput) {
     this.rangeChange.emit({ ...event });
