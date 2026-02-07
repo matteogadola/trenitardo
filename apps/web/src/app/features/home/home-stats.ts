@@ -25,74 +25,80 @@ import { toObservable, toSignal } from '@angular/core/rxjs-interop';
     <div class="stats-grid">
       <app-animated-card animate [animateRepeat]="false">
         <h2 class="sr-only">Statistiche Generali</h2>
-        <div class="flex justify-between">
+        @if (trips().length > 0) {
+          <div class="flex justify-between">
+            <div class="flex flex-col gap-4">
+              @if (delayedTrips().length > 0) {
+                <div>
+                  <h3 class="text-slate-600 uppercase">In ritardo</h3>
+                  <p class="text-3xl text-slate-800">{{ delayedTrips().length }}</p>
+                </div>
+              }
+              @if (cancelledTrips().length > 0) {
+                @let text = cancelledTrips().length === 1 ? 'cancellato' : 'cancellati';
+                <div>
+                  <h3 class="text-slate-600 uppercase">{{ text }}</h3>
+                  <p class="text-3xl text-slate-800">{{ cancelledTrips().length }}</p>
+                </div>
+              }
+              @if (modifiedTrips().length > 0) {
+                @let text = modifiedTrips().length === 1 ? 'deviato' : 'deviati';
+                <div>
+                  <h3 class="text-slate-600 uppercase">{{ text }}</h3>
+                  <p class="text-3xl text-slate-800">{{ modifiedTrips().length }}</p>
+                </div>
+              }
+            </div>
+            <div class="w-1/2 h-full" [class.w-full]="trips().length === onTimeTrips().length">
+              <trip-status-chart [data]="statusChartData()" style="height: 200px;" />
+            </div>
+          </div>
+        } @else {
+          <h3 class="text-slate-600 uppercase">Nessuna corsa trovata</h3>
+        }
+      </app-animated-card>
+      @if (trips().length > 0) {
+        <app-animated-card
+          [delay2]="2"
+          animate
+          animationType="slide-left"
+          animateDelay="400ms"
+          [animateRepeat]="false"
+        >
           <div class="flex flex-col gap-4">
-            @if (delayedTrips().length > 0) {
-              <div>
-                <h3 class="text-slate-600 uppercase">In ritardo</h3>
-                <p class="text-3xl text-slate-800">{{ delayedTrips().length }}</p>
+            <div class="flex justify-between">
+              <div class="min-h-[52px]">
+                @if (totalDelay() > 0) {
+                  <h3 class="text-slate-600 uppercase">Ritardo totale</h3>
+                  <p class="text-3xl text-slate-800">{{ totalDelay() }} minuti</p>
+                }
               </div>
-            }
-            @if (cancelledTrips().length > 0) {
-              @let text = cancelledTrips().length === 1 ? 'cancellato' : 'cancellati';
-              <div>
-                <h3 class="text-slate-600 uppercase">{{ text }}</h3>
-                <p class="text-3xl text-slate-800">{{ cancelledTrips().length }}</p>
+              <div class="min-h-[52px]">
+                @if (avgDelay() > 0) {
+                  <h3 class="text-slate-600 uppercase">Ritardo medio</h3>
+                  <p class="text-3xl text-slate-800">{{ avgDelay() | ceil }} minuti</p>
+                }
               </div>
-            }
-            @if (modifiedTrips().length > 0) {
-              @let text = modifiedTrips().length === 1 ? 'deviato' : 'deviati';
-              <div>
-                <h3 class="text-slate-600 uppercase">{{ text }}</h3>
-                <p class="text-3xl text-slate-800">{{ modifiedTrips().length }}</p>
+            </div>
+            <div class="flex justify-between">
+              <div class="min-h-[52px]">
+                @if (trips().length > 0) {
+                  <h3 class="text-slate-600 uppercase">Treni in orario</h3>
+                  <p class="text-3xl text-slate-800">
+                    {{ ((onTimeTrips().length / trips().length) * 100).toFixed(0) }}%
+                  </p>
+                }
               </div>
-            }
-          </div>
-          <div class="w-1/2 h-full" [class.w-full]="trips().length === onTimeTrips().length">
-            <trip-status-chart [data]="statusChartData()" style="height: 200px;" />
-          </div>
-        </div>
-      </app-animated-card>
-      <app-animated-card
-        [delay2]="2"
-        animate
-        animationType="slide-left"
-        animateDelay="400ms"
-        [animateRepeat]="false"
-      >
-        <div class="flex flex-col gap-4">
-          <div class="flex justify-between">
-            <div class="min-h-[52px]">
-              @if (totalDelay() > 0) {
-                <h3 class="text-slate-600 uppercase">Ritardo totale</h3>
-                <p class="text-3xl text-slate-800">{{ totalDelay() }} minuti</p>
-              }
-            </div>
-            <div class="min-h-[52px]">
-              @if (avgDelay() > 0) {
-                <h3 class="text-slate-600 uppercase">Ritardo medio</h3>
-                <p class="text-3xl text-slate-800">{{ avgDelay() | ceil }} minuti</p>
-              }
+              <div class="min-h-[52px]">
+                @if (medianDelay() > 0) {
+                  <h3 class="text-slate-600 uppercase">Ritardo mediano</h3>
+                  <p class="text-3xl text-slate-800">{{ medianDelay() }} minuti</p>
+                }
+              </div>
             </div>
           </div>
-          <div class="flex justify-between">
-            <div class="min-h-[52px]">
-              @if (trips().length > 0) {
-                <h3 class="text-slate-600 uppercase">Treni in orario</h3>
-                <p class="text-3xl text-slate-800">
-                  {{ ((onTimeTrips().length / trips().length) * 100).toFixed(0) }}%
-                </p>
-              }
-            </div>
-            <div class="min-h-[52px]">
-              @if (medianDelay() > 0) {
-                <h3 class="text-slate-600 uppercase">Ritardo mediano</h3>
-                <p class="text-3xl text-slate-800">{{ medianDelay() }} minuti</p>
-              }
-            </div>
-          </div>
-        </div>
-      </app-animated-card>
+        </app-animated-card>
+      }
     </div>
   `,
   styles: `
