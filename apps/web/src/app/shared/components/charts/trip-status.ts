@@ -7,7 +7,7 @@ import { GraphicComponent, LegendComponent, TooltipComponent } from 'echarts/com
 import { ECharts, EChartsCoreOption } from 'echarts/core';
 import { CanvasRenderer } from 'echarts/renderers';
 import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
-import { debounceTime, filter, skipUntil, skipWhile, tap } from 'rxjs';
+import { combineLatest, filter } from 'rxjs';
 
 echarts.use([CanvasRenderer, PieChart, LegendComponent, GraphicComponent]);
 
@@ -83,13 +83,14 @@ export class TripStatusChart {
   }
 
   constructor() {
-    toObservable(this.data)
+    // Uso combineLatest per aspettare che sia i dati che l'istanza ECharts siano pronti
+    combineLatest([toObservable(this.data), toObservable(this.echartsInstance)])
       .pipe(
         takeUntilDestroyed(),
-        //debounceTime(100),
-        filter((data) => data.total !== 0),
+        // Filtra: i dati devono avere total > 0 e echartsInstance deve essere definito
+        filter(([data, instance]) => data.total !== 0 && instance !== undefined),
       )
-      .subscribe((data) => {
+      .subscribe(([data, instance]) => {
         const options: EChartsCoreOption = {
           series: [
             {
@@ -128,7 +129,7 @@ export class TripStatusChart {
           ],
         };
 
-        this.echartsInstance()?.setOption(options, {
+        instance!.setOption(options, {
           replaceMerge: ['series', 'graphic'],
         });
       });
