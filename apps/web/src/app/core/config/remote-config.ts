@@ -1,15 +1,28 @@
-import { inject } from '@angular/core';
-import { fetchAndActivate, RemoteConfig, getValue, type Value } from '@angular/fire/remote-config';
+import { inject, Injectable, signal } from '@angular/core';
+import { RemoteConfig, fetchAndActivate, getValue } from '@angular/fire/remote-config';
 
+@Injectable({ providedIn: 'root' })
 export class RemoteConfigService {
   private readonly remoteConfig = inject(RemoteConfig);
-  private activated = false;
+  private readonly readyPromise: Promise<void>;
+
+  readonly ready = signal(false);
 
   constructor() {
-    fetchAndActivate(this.remoteConfig).then(() => (this.activated = true));
+    this.readyPromise = fetchAndActivate(this.remoteConfig).then(() => {
+      this.ready.set(true);
+    });
   }
 
-  getRemoteConfig(key: string): Value {
-    return getValue(this.remoteConfig, key);
+  async whenReady(): Promise<void> {
+    return this.readyPromise;
+  }
+
+  getBoolean(key: string): boolean {
+    return getValue(this.remoteConfig, key).asBoolean();
+  }
+
+  getString(key: string): string {
+    return getValue(this.remoteConfig, key).asString();
   }
 }

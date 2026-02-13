@@ -4,11 +4,7 @@ import { provideRouter } from '@angular/router';
 import { provideFirebaseApp, initializeApp } from '@angular/fire/app';
 import { provideAuth, getAuth } from '@angular/fire/auth';
 import { provideFirestore, getFirestore } from '@angular/fire/firestore';
-import {
-  provideRemoteConfig,
-  getRemoteConfig,
-  fetchAndActivate,
-} from '@angular/fire/remote-config';
+import { provideRemoteConfig, getRemoteConfig } from '@angular/fire/remote-config';
 import { provideAnalytics, getAnalytics } from '@angular/fire/analytics';
 import { routes } from './app.routes';
 import { provideFirebaseConfig, FIREBASE_CONFIG_TOKEN } from './core/config/firebase-config';
@@ -29,7 +25,11 @@ export const appConfig: ApplicationConfig = {
     provideFirebaseApp(() => initializeApp(inject(FIREBASE_CONFIG_TOKEN))),
     provideAuth(() => getAuth()),
     provideFirestore(() => getFirestore()),
-    provideRemoteConfig(() => getRemoteConfig()),
+    provideRemoteConfig(() => {
+      const rc = getRemoteConfig();
+      rc.settings.minimumFetchIntervalMillis = 3_600_000;
+      return rc;
+    }),
     provideAnalytics(() => getAnalytics()),
   ],
 };
