@@ -13,7 +13,7 @@ import {
 } from '@app/shared/components/datepicker/datepicker';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { AnimateDirective } from '@app/shared/animations/animate-directive';
-import { RemoteConfig, getValue, fetchAndActivate } from '@angular/fire/remote-config';
+import { RemoteConfigService } from '@app/core/config/remote-config';
 
 interface FilterData {
   mode: DatePickerMode;
@@ -73,7 +73,7 @@ export interface Range {
   `,
 })
 export class HomeFilters {
-  private readonly remoteConfig = inject(RemoteConfig);
+  private readonly remoteConfigService = inject(RemoteConfigService);
   readonly filterModeEnabled = signal(false);
   isLoading = input<boolean>(false);
   rangeChange = output<Range>();
@@ -83,9 +83,8 @@ export class HomeFilters {
   mode = toSignal(this.modeControl.valueChanges, { initialValue: 'daily' });
 
   constructor() {
-    fetchAndActivate(this.remoteConfig).then(() => {
-      const value = getValue(this.remoteConfig, 'filterModeEnabled').asBoolean();
-      this.filterModeEnabled.set(value);
+    this.remoteConfigService.whenReady().then(() => {
+      this.filterModeEnabled.set(this.remoteConfigService.getBoolean('filterModeEnabled'));
     });
   }
 
