@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, effect, input, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, effect, input, signal } from '@angular/core';
 
 import { NgxEchartsDirective, provideEchartsCore } from 'ngx-echarts';
 import * as echarts from 'echarts/core';
@@ -8,6 +8,7 @@ import { ECharts, EChartsCoreOption } from 'echarts/core';
 import { CanvasRenderer } from 'echarts/renderers';
 import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
 import { combineLatest, filter } from 'rxjs';
+import { Trip } from '@repo/types';
 
 echarts.use([CanvasRenderer, PieChart, LegendComponent, GraphicComponent]);
 
@@ -33,8 +34,43 @@ type Data = {
   styles: ``,
 })
 export class TripStatusChart {
-  readonly data = input.required<Data>();
+  //readonly data = input.required<Data>();
+  readonly trips = input.required<Trip[]>();
   private readonly echartsInstance = signal<ECharts | undefined>(undefined);
+
+  private readonly data = computed(() => {
+    const trips = this.trips();
+    let onTimeTrips = 0;
+    let delayedTrips = 0;
+    let modifiedTrips = 0;
+    let cancelledTrips = 0;
+
+    for (const trip of trips) {
+      if (trip.status === 'on-time') {
+        onTimeTrips++;
+      } else if (trip.status === 'delayed') {
+        delayedTrips++;
+      } else if (trip.status === 'cancelled') {
+        cancelledTrips++;
+      } else if (trip.status === 'partially-cancelled') {
+        modifiedTrips++;
+      }
+    }
+
+    return {
+      total: this.trips().length,
+      data: [
+        { value: onTimeTrips, name: 'In orario', itemStyle: { color: '#6BCF8B' } },
+        { value: delayedTrips, name: 'In ritardo', itemStyle: { color: '#FF6B7A' } },
+        {
+          value: cancelledTrips,
+          name: 'Cancellati',
+          itemStyle: { color: '#353831' },
+        },
+        { value: modifiedTrips, name: 'Deviati', itemStyle: { color: '#FFAB6B' } },
+      ],
+    };
+  });
 
   options: EChartsCoreOption = {
     legend: {

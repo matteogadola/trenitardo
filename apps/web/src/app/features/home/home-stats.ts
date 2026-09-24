@@ -50,7 +50,7 @@ import { toObservable, toSignal } from '@angular/core/rxjs-interop';
               }
             </div>
             <div class="w-1/2 h-full" [class.w-full]="trips().length === onTimeTrips().length">
-              <trip-status-chart [data]="statusChartData()" style="height: 200px;" />
+              <trip-status-chart [trips]="trips()" style="height: 200px;" />
             </div>
           </div>
         } @else {
@@ -134,7 +134,7 @@ export class HomeStats {
     return delays.length % 2 === 0 ? (delays[mid - 1] + delays[mid]) / 2 : delays[mid];
   });
 
-  readonly statusChartData = computed(() => {
+  /*readonly statusChartData = computed(() => {
     return {
       total: this.trips().length,
       data: [
@@ -148,5 +148,5 @@ export class HomeStats {
         { value: this.modifiedTrips().length, name: 'Deviati', itemStyle: { color: '#FFAB6B' } },
       ],
     };
-  });
+  });*/
 }

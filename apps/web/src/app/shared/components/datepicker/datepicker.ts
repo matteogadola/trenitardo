@@ -244,7 +244,7 @@ export class Datepicker {
       this.rangeGroup.patchValue({ startDate, endDate });
       this.singleDateControl.setValue(startDate);
       picker.close();
-      this.emitValue();
+      //this.emitValue();
     }
   }
 
