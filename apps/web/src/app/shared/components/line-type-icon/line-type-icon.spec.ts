@@ -14,6 +14,7 @@ describe('LineTypeIcon', () => {
 
     fixture = TestBed.createComponent(LineTypeIcon);
     component = fixture.componentInstance;
+    fixture.componentRef.setInput('type', 'Regionale');
     await fixture.whenStable();
   });
 

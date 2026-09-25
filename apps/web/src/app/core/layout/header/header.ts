@@ -1,8 +1,9 @@
-import { Component, inject, signal, DestroyRef, afterNextRender } from '@angular/core';
+import { afterNextRender, Component, computed, DestroyRef, inject, signal } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { ScrollDispatcher } from '@angular/cdk/scrolling';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Logo } from '../logo';
+import { AuthService } from '@app/core/auth/auth-service';
 
 @Component({
   selector: 'app-header',
@@ -13,7 +14,25 @@ import { Logo } from '../logo';
         <div class="flex items-center justify-between w-full">
           <span class=""></span>
           <app-logo [scaleIcon]="isScrolled()" />
-          <span class=""></span>
+          <div class="flex items-center gap-3">
+            @if (authService.isAuthenticated()) {
+              <span class="hidden sm:inline text-sm text-slate-700">{{ displayName() }}</span>
+              <button
+                class="text-sm text-slate-600 hover:text-slate-900 transition-colors"
+                type="button"
+                (click)="signOut()"
+              >
+                Esci
+              </button>
+            } @else {
+              <a
+                class="text-sm text-slate-600 hover:text-slate-900 transition-colors"
+                routerLink="/login"
+              >
+                Accedi
+              </a>
+            }
+          </div>
         </div>
       </div>
 
@@ -84,17 +103,26 @@ import { Logo } from '../logo';
 export class Header {
   private scrollDispatcher = inject(ScrollDispatcher);
   private destroyRef = inject(DestroyRef);
+  readonly authService = inject(AuthService);
+
+  readonly displayName = computed(
+    () => this.authService.user()?.displayName ?? this.authService.user()?.email ?? 'Account',
+  );
+
+  async signOut(): Promise<void> {
+    await this.authService.signOut();
+  }
 
   private readonly MAX_SCROLL_PX = 50;
   private readonly MAX_BLUR_PX = 12;
   private readonly MAX_OPACITY = 0.7;
   private readonly MAX_SCALE = 1;
 
-  currentBlur = signal<number>(0);
-  currentOpacity = signal<number>(0);
-  currentScale = signal<number>(0);
+  readonly currentBlur = signal<number>(0);
+  readonly currentOpacity = signal<number>(0);
+  readonly currentScale = signal<number>(0);
 
-  isScrolled = signal<boolean>(false);
+  readonly isScrolled = signal<boolean>(false);
 
   constructor() {
     afterNextRender(() => {

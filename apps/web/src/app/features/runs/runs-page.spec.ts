@@ -1,4 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { of } from 'rxjs';
+import { ApiService } from '@app/core/api/api-service';
 
 import { RunsPage } from './runs-page';
 
@@ -8,7 +10,8 @@ describe('RunsPage', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [RunsPage]
+      imports: [RunsPage],
+      providers: [{ provide: ApiService, useValue: { getRuns: () => of([]) } }],
     })
     .compileComponents();
 

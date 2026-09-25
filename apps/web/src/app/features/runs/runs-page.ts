@@ -1,12 +1,11 @@
-import { Component, ChangeDetectionStrategy, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { ApiService } from '@app/core/api/api-service';
-import { TimePipe } from '../../shared/pipes/time-pipe';
 
 @Component({
   selector: 'app-runs-page',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [TimePipe],
+  imports: [],
   template: `
     <div class="w-content pt-[80px]">
       <h1>Runs</h1>

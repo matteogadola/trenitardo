@@ -1,19 +1,20 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { TripMulti } from './trip-multi';
+import { TripMultiChart } from './trip-multi';
 
-describe('TripMulti', () => {
-  let component: TripMulti;
-  let fixture: ComponentFixture<TripMulti>;
+describe('TripMultiChart', () => {
+  let component: TripMultiChart;
+  let fixture: ComponentFixture<TripMultiChart>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [TripMulti]
+      imports: [TripMultiChart]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(TripMulti);
+    fixture = TestBed.createComponent(TripMultiChart);
     component = fixture.componentInstance;
+    fixture.componentRef.setInput('trips', []);
     await fixture.whenStable();
   });
 

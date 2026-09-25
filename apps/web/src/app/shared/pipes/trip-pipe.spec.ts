@@ -1,8 +1,8 @@
-import { TripPipe } from './trip-pipe';
+import { TripStatusPipe } from './trip-pipe';
 
-describe('TripPipe', () => {
+describe('TripStatusPipe', () => {
   it('create an instance', () => {
-    const pipe = new TripPipe();
+    const pipe = new TripStatusPipe();
     expect(pipe).toBeTruthy();
   });
 });

@@ -1,4 +1,11 @@
-import { Component, ChangeDetectionStrategy, inject, signal } from '@angular/core';
+import {
+  Component,
+  ChangeDetectionStrategy,
+  inject,
+  signal,
+  linkedSignal,
+  Resource,
+} from '@angular/core';
 import { HomeFilters, Range } from './home-filters';
 import { HomeStats } from './home-stats';
 import { HomeStatsMulti } from './home-stats-multi';
@@ -9,7 +16,7 @@ import { HomeHero } from './home-hero';
 import { TODAY } from '@app/core/utils/date-util';
 import { Spinner } from '@app/shared/components/spinner/spinner';
 import { HomeFaq } from './home-faq';
-import { filter, map, startWith } from 'rxjs';
+import { filter, map, startWith, tap } from 'rxjs';
 
 @Component({
   selector: 'app-home-page',
@@ -59,4 +66,16 @@ export class HomePage {
     ),
     { initialValue: [] },
   );
+
+  // Mantiene l'ultimo valore valido durante il ricaricamento
+  /*readonly trips = linkedSignal({
+    source: () => ({
+      isLoading: this.tripsResource.isLoading(),
+      value: this.tripsResource.value(),
+    }),
+    computation: ({ isLoading, value }, previous): Trip[] => {
+      if (isLoading) return previous?.value ?? [];
+      return value;
+    },
+  });*/
 }
