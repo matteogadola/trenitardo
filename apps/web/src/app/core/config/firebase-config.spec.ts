@@ -1,16 +1,18 @@
-import { TestBed } from '@angular/core/testing';
+import { environment } from '@env/environment';
+import { parseServerConfig } from './firebase-config';
 
-import { FirebaseConfig } from './firebase-config';
-
-describe('FirebaseConfig', () => {
-  let service: FirebaseConfig;
-
-  beforeEach(() => {
-    TestBed.configureTestingModule({});
-    service = TestBed.inject(FirebaseConfig);
+describe('parseServerConfig', () => {
+  it('usa FIREBASE_CONFIG quando presente e valida', () => {
+    expect(parseServerConfig('{"apiKey":"key","projectId":"proj"}')).toEqual({
+      apiKey: 'key',
+      projectId: 'proj',
+    });
   });
 
-  it('should be created', () => {
-    expect(service).toBeTruthy();
+  it('fa fallback sulla config di build se assente, vuota o malformata', () => {
+    expect(parseServerConfig(undefined)).toEqual(environment.firebaseConfig);
+    expect(parseServerConfig('')).toEqual(environment.firebaseConfig);
+    expect(parseServerConfig('{}')).toEqual(environment.firebaseConfig);
+    expect(parseServerConfig('not-json')).toEqual(environment.firebaseConfig);
   });
 });

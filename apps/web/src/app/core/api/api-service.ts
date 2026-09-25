@@ -1,15 +1,22 @@
 import { inject, Injectable } from '@angular/core';
 import {
+  addDoc,
   collection,
   collectionData,
+  CollectionReference,
+  deleteDoc,
+  doc,
   Firestore,
   orderBy,
   query,
   QueryConstraint,
+  updateDoc,
   where,
 } from '@angular/fire/firestore';
 import { map, Observable, shareReplay } from 'rxjs';
 import { Line, Run, Trip } from '@repo/types';
+
+export type RunDraft = Omit<Run, 'id' | 'createdAt' | 'updatedAt'>;
 
 @Injectable({
   providedIn: 'root',
@@ -24,6 +31,27 @@ export class ApiService {
   }
   getRuns(): Observable<Run[]> {
     return this._runs$;
+  }
+
+  async createRun(run: RunDraft): Promise<string> {
+    const now = new Date().toISOString();
+    const ref = await addDoc(collection(this._firestore, 'runs'), {
+      ...run,
+      createdAt: now,
+      updatedAt: now,
+    });
+    return ref.id;
+  }
+
+  async updateRun(id: string, run: RunDraft): Promise<void> {
+    await updateDoc(doc(this._firestore, 'runs', id), {
+      ...run,
+      updatedAt: new Date().toISOString(),
+    });
+  }
+
+  async deleteRun(id: string): Promise<void> {
+    await deleteDoc(doc(this._firestore, 'runs', id));
   }
 
   getTrips({ range }: { range: { startDate: string; endDate?: string } }): Observable<Trip[]> {
@@ -49,7 +77,7 @@ export class ApiService {
     );
   }
 
-  private inferCollection<T extends object>(path: string) {
+  private inferCollection<T extends object>(path: string): CollectionReference<T> {
     return collection(this._firestore, path).withConverter({
       toFirestore: (data: T) => data,
       fromFirestore: (snap) => ({ id: snap.id, ...snap.data() }) as T,

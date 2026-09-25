@@ -14,6 +14,7 @@ describe('HomeTripList', () => {
 
     fixture = TestBed.createComponent(HomeTripList);
     component = fixture.componentInstance;
+    fixture.componentRef.setInput('trips', []);
     await fixture.whenStable();
   });
 

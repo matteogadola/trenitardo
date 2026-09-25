@@ -14,6 +14,10 @@ describe('Card', () => {
 
     fixture = TestBed.createComponent(Card);
     component = fixture.componentInstance;
+    fixture.componentRef.setInput('title', 'Test');
+    fixture.componentRef.setInput('value', '42');
+    fixture.componentRef.setInput('trend', '+1');
+    fixture.componentRef.setInput('data', [1, 2, 3]);
     await fixture.whenStable();
   });
 
