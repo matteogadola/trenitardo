@@ -6,8 +6,6 @@ import { provideAuth, getAuth } from '@angular/fire/auth';
 import { provideFirestore, getFirestore } from '@angular/fire/firestore';
 import { provideRemoteConfig, getRemoteConfig } from '@angular/fire/remote-config';
 import { provideAnalytics, getAnalytics } from '@angular/fire/analytics';
-import { providePrimeNG } from 'primeng/config';
-import Aura from '@primeuix/themes/aura';
 import { routes } from './app.routes';
 import { provideFirebaseConfig, FIREBASE_CONFIG_TOKEN } from './core/config/firebase-config';
 import { DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE } from '@angular/material/core';
@@ -16,7 +14,7 @@ import { provideHttpClient, withFetch } from '@angular/common/http';
 
 export const appConfig: ApplicationConfig = {
   providers: [
-    { provide: MAT_DATE_LOCALE, useFactory: () => navigator.language }, //useValue: 'it-IT' },
+    { provide: MAT_DATE_LOCALE, useFactory: () => navigator.language },
     { provide: DateAdapter, useClass: DayjsDateAdapter, deps: [MAT_DATE_LOCALE] },
     { provide: MAT_DATE_FORMATS, useValue: MAT_DAYJS_FORMATS },
     provideBrowserGlobalErrorListeners(),
@@ -27,12 +25,11 @@ export const appConfig: ApplicationConfig = {
     provideFirebaseApp(() => initializeApp(inject(FIREBASE_CONFIG_TOKEN))),
     provideAuth(() => getAuth()),
     provideFirestore(() => getFirestore()),
-    provideRemoteConfig(() => getRemoteConfig()),
-    provideAnalytics(() => getAnalytics()),
-    providePrimeNG({
-      theme: {
-        preset: Aura,
-      },
+    provideRemoteConfig(() => {
+      const rc = getRemoteConfig();
+      rc.settings.minimumFetchIntervalMillis = 3_600_000;
+      return rc;
     }),
+    provideAnalytics(() => getAnalytics()),
   ],
 };

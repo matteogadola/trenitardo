@@ -1,13 +1,11 @@
 import { Component, input } from '@angular/core';
-import { CardModule } from 'primeng/card';
 import { Trip } from '@repo/types';
 import { LineTypeIcon } from '../line-type-icon/line-type-icon';
-import { TimePipe, ReadableDurationPipe } from '../../pipes/time-pipe';
 import { TripStatusPipe } from '../../pipes/trip-pipe';
 
 @Component({
   selector: 'app-trip-list',
-  imports: [CardModule, LineTypeIcon, TimePipe, ReadableDurationPipe, TripStatusPipe],
+  imports: [LineTypeIcon, TripStatusPipe],
   template: `
     <div [class]="class()">
       @for (trip of trips(); track trip.id) {
@@ -19,17 +17,14 @@ import { TripStatusPipe } from '../../pipes/trip-pipe';
               <!-- Treno -->
               <div class="flex items-center gap-2 mb-3">
                 <app-line-type-icon [type]="trip.line.type" />
-                <span class="ml-2">{{ trip.run.code }}</span>
-
-                <!--span class="text-sm font-extrabold text-gray-800 tracking-tight uppercase">
-                  {{ trip.run.code }}
-                </span-->
+                <span class="ml-1">{{ trip.run.code }}</span>
               </div>
 
               <div class="grid grid-cols-3 items-start">
+                <!-- Partenza -->
                 <div class="flex flex-col">
                   <span class="text-[22px] font-bold text-[#005965] leading-none">
-                    {{ trip.actualDepartureTime | time }}
+                    {{ trip.actualDepartureTime }}
                   </span>
                   <span class="text-base text-gray-600 font-medium leading-tight">
                     {{ trip.origin }}
@@ -56,21 +51,26 @@ import { TripStatusPipe } from '../../pipes/trip-pipe';
                     </span>
                   }
                 </div>
+                <!-- Arrivo -->
                 <div class="flex flex-col items-end">
                   <span
                     class="text-[22px]  text-[#005965] leading-none"
                     [class.font-bold]="trip.isCompleted"
                     [class.italic]="!trip.isCompleted"
                   >
-                    {{ trip.actualArrivalTime | time }}
+                    {{ trip.actualArrivalTime ?? trip.arrivalTime }}
                   </span>
-                  <span class="text-base text-gray-600 font-medium leading-tight">
+                  <span class="text-base text-gray-600 font-medium leading-tight text-right">
                     {{ trip.destination }}
                   </span>
                 </div>
               </div>
               <div class="mt-4 text-sm text-gray-600">
-                {{ trip.statusMessage }}
+                @if (trip.statusMessage) {
+                  {{ trip.statusMessage }}
+                } @else if (trip.delayReason) {
+                  {{ trip.delayReason }}
+                }
               </div>
             </div>
           </div>

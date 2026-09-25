@@ -1,103 +1,122 @@
 import {
   afterNextRender,
+  ChangeDetectionStrategy,
   Component,
   computed,
+  effect,
   inject,
   input,
   PLATFORM_ID,
   signal,
 } from '@angular/core';
 import { Trip } from '@repo/types';
-import { ChartModule } from 'primeng/chart';
 import { AnimatedCard } from '@app/shared/components/card/animated-card';
 import { MathCeilPipe } from '../../shared/pipes/math-pipe';
+import { AnimateDirective } from '@app/shared/animations/animate-directive';
+import { TripStatusChart } from '@app/shared/components/charts/trip-status';
+import { debounceTime } from 'rxjs';
+import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'home-stats',
-  imports: [ChartModule, AnimatedCard, MathCeilPipe],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [AnimatedCard, MathCeilPipe, AnimateDirective, TripStatusChart],
   template: `
     <div class="stats-grid">
-      <app-animated-card>
-        <div class="flex justify-between">
+      <app-animated-card animate [animateRepeat]="false">
+        <h2 class="sr-only">Statistiche Generali</h2>
+        @if (trips().length > 0) {
+          <div class="flex justify-between">
+            <div class="flex flex-col gap-4">
+              @if (delayedTrips().length > 0) {
+                <div>
+                  <h3 class="text-slate-600 uppercase">In ritardo</h3>
+                  <p class="text-3xl text-slate-800">{{ delayedTrips().length }}</p>
+                </div>
+              }
+              @if (cancelledTrips().length > 0) {
+                @let text = cancelledTrips().length === 1 ? 'cancellato' : 'cancellati';
+                <div>
+                  <h3 class="text-slate-600 uppercase">{{ text }}</h3>
+                  <p class="text-3xl text-slate-800">{{ cancelledTrips().length }}</p>
+                </div>
+              }
+              @if (modifiedTrips().length > 0) {
+                @let text = modifiedTrips().length === 1 ? 'deviato' : 'deviati';
+                <div>
+                  <h3 class="text-slate-600 uppercase">{{ text }}</h3>
+                  <p class="text-3xl text-slate-800">{{ modifiedTrips().length }}</p>
+                </div>
+              }
+            </div>
+            <div class="w-1/2 h-full" [class.w-full]="trips().length === onTimeTrips().length">
+              <trip-status-chart [trips]="trips()" style="height: 200px;" />
+            </div>
+          </div>
+        } @else {
+          <h3 class="text-slate-600 uppercase">Nessuna corsa trovata</h3>
+        }
+      </app-animated-card>
+      @if (trips().length > 0) {
+        <app-animated-card
+          [delay2]="2"
+          animate
+          animationType="slide-left"
+          animateDelay="400ms"
+          [animateRepeat]="false"
+        >
           <div class="flex flex-col gap-4">
-            @if (delayedTrips().length > 0) {
-              <div>
-                <h3 class="text-slate-600 uppercase">In ritardo</h3>
-                <p class="text-3xl text-slate-800">{{ delayedTrips().length }}</p>
+            <div class="flex justify-between">
+              <div class="min-h-[52px]">
+                @if (totalDelay() > 0) {
+                  <h3 class="text-slate-600 uppercase">Ritardo totale</h3>
+                  <p class="text-3xl text-slate-800">{{ totalDelay() }} minuti</p>
+                }
               </div>
-            }
-            @if (cancelledTrips().length > 0) {
-              @let text = cancelledTrips().length === 1 ? 'cancellato' : 'cancellati';
-              <div>
-                <h3 class="text-slate-600 uppercase">{{ text }}</h3>
-                <p class="text-3xl text-slate-800">{{ cancelledTrips().length }}</p>
+              <div class="min-h-[52px]">
+                @if (avgDelay() > 0) {
+                  <h3 class="text-slate-600 uppercase">Ritardo medio</h3>
+                  <p class="text-3xl text-slate-800">{{ avgDelay() | ceil }} minuti</p>
+                }
               </div>
-            }
-            @if (modifiedTrips().length > 0) {
-              @let text = modifiedTrips().length === 1 ? 'deviato' : 'deviati';
-              <div>
-                <h3 class="text-slate-600 uppercase">{{ text }}</h3>
-                <p class="text-3xl text-slate-800">{{ modifiedTrips().length }}</p>
-              </div>
-            }
-          </div>
-          <p-chart
-            type="pie"
-            [data]="statusData()"
-            [options]="options()"
-            [plugins]="chartPlugins"
-            class="w-50"
-          />
-        </div>
-      </app-animated-card>
-      <app-animated-card [delay2]="2">
-        <div class="flex flex-col gap-4">
-          <div class="flex justify-between">
-            <div>
-              @if (totalDelay() > 0) {
-                <h3 class="text-slate-600 uppercase">Ritardo totale</h3>
-                <p class="text-3xl text-slate-800">{{ totalDelay() }} minuti</p>
-              }
             </div>
-            <div>
-              @if (avgDelay() > 0) {
-                <h3 class="text-slate-600 uppercase">Ritardo medio</h3>
-                <p class="text-3xl text-slate-800">{{ avgDelay() | ceil }} minuti</p>
-              }
+            <div class="flex justify-between">
+              <div class="min-h-[52px]">
+                @if (trips().length > 0) {
+                  <h3 class="text-slate-600 uppercase">Treni in orario</h3>
+                  <p class="text-3xl text-slate-800">
+                    {{ ((onTimeTrips().length / trips().length) * 100).toFixed(0) }}%
+                  </p>
+                }
+              </div>
+              <div class="min-h-[52px]">
+                @if (medianDelay() > 0) {
+                  <h3 class="text-slate-600 uppercase">Ritardo mediano</h3>
+                  <p class="text-3xl text-slate-800">{{ medianDelay() }} minuti</p>
+                }
+              </div>
             </div>
           </div>
-          <div class="flex justify-between">
-            <div>
-              <h3 class="text-slate-600 uppercase">Treni in orario</h3>
-              <p class="text-3xl text-slate-800">
-                {{ ((onTimeTrips().length / trips().length) * 100).toFixed(0) }}%
-              </p>
-            </div>
-            <div>
-              @if (medianDelay() > 0) {
-                <h3 class="text-slate-600 uppercase">Ritardo mediano</h3>
-                <p class="text-3xl text-slate-800">{{ medianDelay() }} minuti</p>
-              }
-            </div>
-          </div>
-        </div>
-      </app-animated-card>
+        </app-animated-card>
+      }
     </div>
   `,
   styles: `
     .stats-grid {
       display: grid;
-      gap: 2rem;
+      gap: 1rem;
       grid-template-columns: repeat(1, minmax(0, 1fr));
 
-      @media (width >= 64rem /* 1024px */) {
+      @media (width >= 64rem) {
         grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 2rem;
       }
     }
   `,
 })
 export class HomeStats {
   readonly trips = input<Trip[]>([]);
+  readonly isLoading = input<boolean>(false);
   readonly onTimeTrips = computed(() => this.trips().filter((t) => t.status === 'on-time'));
   readonly delayedTrips = computed(() => this.trips().filter((t) => t.status === 'delayed'));
   readonly realDelayedTrips = computed(() => this.trips().filter((t) => t.delay > 0));
@@ -115,82 +134,19 @@ export class HomeStats {
     return delays.length % 2 === 0 ? (delays[mid - 1] + delays[mid]) / 2 : delays[mid];
   });
 
-  data = [];
-  statusData = computed(() => {
+  /*readonly statusChartData = computed(() => {
     return {
-      labels: ['In orario', 'In ritardo', 'Soppressi'],
-      datasets: [
+      total: this.trips().length,
+      data: [
+        { value: this.onTimeTrips().length, name: 'In orario', itemStyle: { color: '#6BCF8B' } },
+        { value: this.delayedTrips().length, name: 'In ritardo', itemStyle: { color: '#FF6B7A' } },
         {
-          data: [
-            this.onTimeTrips().length,
-            this.delayedTrips().length,
-            this.cancelledTrips().length,
-            this.modifiedTrips().length,
-          ],
-          backgroundColor: ['#6BCF8B', '#FF6B7A', '#353831', '#FFAB6B'],
-          hoverOffset: 4,
-          responsive: true,
+          value: this.cancelledTrips().length,
+          name: 'Cancellati',
+          itemStyle: { color: '#353831' },
         },
+        { value: this.modifiedTrips().length, name: 'Deviati', itemStyle: { color: '#FFAB6B' } },
       ],
     };
-  });
-  options = computed(() => {
-    return {
-      cutout: '60%',
-      borderWidth: 1,
-      plugins: {
-        legend: {
-          display: false,
-        },
-        nTrips: { value: this.trips().length.toString() },
-      },
-    };
-  });
-
-  chartPlugins = [
-    {
-      id: 'centerText',
-      afterDraw: (chart: any) => {
-        const {
-          ctx,
-          chartArea: { left, top, width, height },
-        } = chart;
-        ctx.save();
-
-        const centerX = left + width / 2;
-        const centerY = top + height / 2;
-
-        const text = chart.config.options.plugins.nTrips.value;
-        const line1 = {
-          text: text,
-          fontSize: (height / 50).toFixed(2),
-          color: '#000000',
-          fontWeight: '600',
-        };
-
-        const line2 = {
-          text: 'TRENI',
-          fontSize: (height / 150).toFixed(2),
-          color: '#000000',
-          fontWeight: '',
-        };
-
-        // --- DISEGNO PRIMA RIGA (Superiore) ---
-        ctx.font = `${line1.fontWeight} ${line1.fontSize}em sans-serif`;
-        ctx.fillStyle = line1.color;
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'bottom'; // Si appoggia sulla linea centrale
-        ctx.fillText(line1.text, centerX, centerY + 12);
-
-        // --- DISEGNO SECONDA RIGA (Inferiore) ---
-        ctx.font = `${line2.fontWeight} ${line2.fontSize}em sans-serif`;
-        ctx.fillStyle = line2.color;
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'top'; // Parte dalla linea centrale verso il basso
-        ctx.fillText(line2.text, centerX, centerY + 12);
-
-        ctx.restore();
-      },
-    },
-  ];
+  });*/
 }

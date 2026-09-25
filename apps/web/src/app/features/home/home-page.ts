@@ -2,73 +2,80 @@ import {
   Component,
   ChangeDetectionStrategy,
   inject,
-  resource,
   signal,
-  afterNextRender,
+  linkedSignal,
+  Resource,
 } from '@angular/core';
-import { CommonModule, NgOptimizedImage } from '@angular/common';
-import { HomeFilters } from './home-filters';
+import { HomeFilters, Range } from './home-filters';
 import { HomeStats } from './home-stats';
+import { HomeStatsMulti } from './home-stats-multi';
 import { HomeTripList } from './home-trip-list';
 import { ApiService } from '@app/core/api/api-service';
-import { rxResource, toSignal } from '@angular/core/rxjs-interop';
+import { rxResource, toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { HomeHero } from './home-hero';
 import { TODAY } from '@app/core/utils/date-util';
-import { Analytics, logEvent } from '@angular/fire/analytics';
 import { Spinner } from '@app/shared/components/spinner/spinner';
 import { HomeFaq } from './home-faq';
+import { filter, map, startWith, tap } from 'rxjs';
 
 @Component({
   selector: 'app-home-page',
-  imports: [CommonModule, HomeFilters, HomeStats, HomeTripList, HomeHero, Spinner, HomeFaq],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [HomeFilters, HomeStats, HomeTripList, HomeHero, Spinner, HomeFaq, HomeStatsMulti],
   template: `
-    <div class="w-content pt-[80px]">
+    <main role="main" class="w-content pt-[80px]">
       <home-hero />
 
       @defer (when tripsResource.hasValue()) {
-        <div class="flex flex-col gap-8">
-          <home-stats [trips]="tripsResource.value()" />
-          <home-filters
-            [isLoading]="tripsResource.isLoading()"
-            (filterSubmit)="onFilterUpdate($event)"
-          />
-          <home-trip-list [trips]="tripsResource.value()" [date]="date()" />
+        <div class="flex flex-col gap-4 lg:gap-8">
+          <home-stats [trips]="trips()" [isLoading]="tripsResource.isLoading()" />
+          <home-filters [isLoading]="tripsResource.isLoading()" (rangeChange)="range.set($event)" />
+          @if (range().startDate && range().endDate) {
+            <home-stats-multi [trips]="trips()" [isLoading]="tripsResource.isLoading()" />
+          }
+          <home-trip-list [trips]="trips()" />
         </div>
       } @placeholder {
-        <app-spinner />
+        <div class="flex items-center justify-center">
+          <app-spinner />
+        </div>
       }
       <section class="hidden pt-24">
         <home-faq />
       </section>
-    </div>
+    </main>
   `,
-  styles: ``,
 })
 export class HomePage {
   private readonly apiService = inject(ApiService);
+  readonly range = signal<Range>({ startDate: TODAY });
   readonly lines$ = this.apiService.getLines();
 
-  readonly date = signal<string>(TODAY);
-
   readonly tripsResource = rxResource({
-    params: () => this.date(),
-    stream: ({ params: date }) => this.apiService.getTrips({ date }),
+    params: () => this.range(),
+    stream: ({ params: range }) => this.apiService.getTrips({ range }),
     defaultValue: [],
   });
 
-  onFilterUpdate(filter: any) {
-    this.date.set(filter.date);
-  }
+  // Evito che rxResource emetta [] ad ogni ricaricamento
+  trips = toSignal(
+    toObservable(this.tripsResource.isLoading).pipe(
+      startWith(true),
+      filter((isLoading) => !isLoading),
+      map(() => this.tripsResource.value()),
+    ),
+    { initialValue: [] },
+  );
 
-  private analytics = inject(Analytics);
-
-  constructor() {
-    afterNextRender(() => {
-      logEvent(this.analytics, 'landing_page_view', {
-        campaign: 'launch_v1',
-        timestamp: new Date().toISOString(),
-      });
-    });
-  }
+  // Mantiene l'ultimo valore valido durante il ricaricamento
+  /*readonly trips = linkedSignal({
+    source: () => ({
+      isLoading: this.tripsResource.isLoading(),
+      value: this.tripsResource.value(),
+    }),
+    computation: ({ isLoading, value }, previous): Trip[] => {
+      if (isLoading) return previous?.value ?? [];
+      return value;
+    },
+  });*/
 }
